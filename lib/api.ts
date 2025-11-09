@@ -9,6 +9,12 @@ const api: AxiosInstance = axios.create({
   },
 });
 
+// Auth API
+export const authAPI = {
+  login: (username: string, password: string) => api.post('/auth/login', { username, password }),
+  //register: (data: any) => api.post('/auth/register', data),
+};
+
 // Request interceptor - add token
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
@@ -34,13 +40,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Auth API
-export const authAPI = {
-  login: (username: string, password: string) =>
-    api.post('/auth/login', { username, password }),
-  register: (data: any) => api.post('/auth/register', data),
-};
 
 // Warehouses API
 export const warehousesAPI = {
@@ -146,3 +145,4 @@ export const rackAPI = {
 
 
 export default api;
+
