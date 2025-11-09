@@ -11,7 +11,7 @@ const api: AxiosInstance = axios.create({
 
 // Auth API
 export const authAPI = {
-  login: (username: string, password: string) => api.post('/auth/login', { username, password }),
+  login: (username: string, password: string) => api.post('auth/login', { username, password }),
   //register: (data: any) => api.post('/auth/register', data),
 };
 
@@ -145,4 +145,5 @@ export const rackAPI = {
 
 
 export default api;
+
 
