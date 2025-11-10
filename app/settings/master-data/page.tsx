@@ -619,19 +619,22 @@ export default function MasterDataPage() {
                 </TableHead>
 
                 <TableBody>
-                  {batches.map(batch => (
-                    <TableRow key={batch.batch_id} hover>
-                      <TableCell sx={{ fontWeight: 'bold' }}>{batch.batch_id}</TableCell>
-                      <TableCell>{batch.count.toLocaleString()}</TableCell>
-                      <TableCell>{new Date(batch.lastupdated).toLocaleString()}</TableCell>
-                      <TableCell align="center">
-                        <IconButton size="small" color="error" onClick={() => handleDeleteBatch(batch.batch_id)}>
-                          <DeleteSweepIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+  {batches.map(batch => (
+    <TableRow key={batch.batch_id} hover>
+      <TableCell sx={{ fontWeight: 'bold' }}>{batch.batch_id || '-'}</TableCell>
+      <TableCell>{(batch.count || 0).toLocaleString()}</TableCell>
+      <TableCell>
+        {batch.lastupdated ? new Date(batch.lastupdated).toLocaleString() : '-'}
+      </TableCell>
+      <TableCell align="center">
+        <IconButton size="small" color="error" onClick={() => handleDeleteBatch(batch.batch_id)}>
+          <DeleteSweepIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
 
               </Table>
             </TableContainer>
@@ -772,5 +775,6 @@ export default function MasterDataPage() {
     </AppLayout>
   );
 }
+
 
 
