@@ -468,9 +468,8 @@ export default function MasterDataPage() {
           <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1 }}>
             📊 Master Data Management
           </Typography>
-          <Chip label={`${(totalRecords || 0).toLocaleString()} Records`} color="primary" size="small" sx={{ mr: 1 }} />
-          <Chip label={`${(batches?.length || 0).toLocaleString()} Batches`} color="success" size="small" sx={{ mr: 2 }} />
-
+          <Chip label={`${totalRecords.toLocaleString()} Records`} color="primary" size="small" sx={{ mr: 1 }} />
+          <Chip label={`${batches.length} Batches`} color="success" size="small" sx={{ mr: 2 }} />
           <Button color="error" variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout} size="small">
             Logout
           </Button>
@@ -479,18 +478,15 @@ export default function MasterDataPage() {
 
       {/* Upload Progress Bar */}
       {uploadProgress.show && (
-  <Paper sx={{ m: 2, p: 2, bgcolor: '#f5f5f5' }}>
-    <Stack spacing={1}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography variant="body2" fontWeight="bold">
-          ⏳ Uploading: {(uploadProgress.processed || 0).toLocaleString()} / {(uploadProgress.total || 0).toLocaleString()} rows
-        </Typography>
-
-              
+        <Paper sx={{ m: 2, p: 2, bgcolor: '#f5f5f5' }}>
+          <Stack spacing={1}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography variant="body2" fontWeight="bold">
+                ⏳ Uploading: {uploadProgress.processed.toLocaleString()} / {uploadProgress.total.toLocaleString()} rows
+              </Typography>
               <Stack direction="row" spacing={1} alignItems="center">
-<Chip label={`✓ ${(uploadProgress.successCount || 0).toLocaleString()}`} color="success" size="small" />
-<Chip label={`✗ ${(uploadProgress.errorCount || 0).toLocaleString()}`} color="error" size="small" />
-                
+                <Chip label={`✓ ${uploadProgress.successCount.toLocaleString()}`} color="success" size="small" />
+                <Chip label={`✗ ${uploadProgress.errorCount.toLocaleString()}`} color="error" size="small" />
                 <IconButton size="small" onClick={handleCancelUpload} color="error">
                   <CancelIcon fontSize="small" />
                 </IconButton>
@@ -595,10 +591,12 @@ export default function MasterDataPage() {
                 }}
                 rowsPerPageOptions={[100, 500, 1000]} // Removed "All" option
                 labelRowsPerPage="Rows per page:"
-               labelDisplayedRows={({ from, to, count }) =>
-               `${(from || 0).toLocaleString()}-${(to || 0).toLocaleString()} of ${
-                 count && count !== -1 ? count.toLocaleString() : 'more than ' + (to || 0)}`}
-                />
+                labelDisplayedRows={({ from, to, count }) => 
+                  `${from.toLocaleString()}-${to.toLocaleString()} of ${count !== -1 ? count.toLocaleString() : 'more than ' + to}`
+                }
+              />
+
+
 
             </Paper>
           </>
@@ -619,22 +617,19 @@ export default function MasterDataPage() {
                 </TableHead>
 
                 <TableBody>
-  {batches.map(batch => (
-    <TableRow key={batch.batch_id} hover>
-      <TableCell sx={{ fontWeight: 'bold' }}>{batch.batch_id || '-'}</TableCell>
-      <TableCell>{(batch.count || 0).toLocaleString()}</TableCell>
-      <TableCell>
-        {batch.lastupdated ? new Date(batch.lastupdated).toLocaleString() : '-'}
-      </TableCell>
-      <TableCell align="center">
-        <IconButton size="small" color="error" onClick={() => handleDeleteBatch(batch.batch_id)}>
-          <DeleteSweepIcon />
-        </IconButton>
-      </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
-
+                  {batches.map(batch => (
+                    <TableRow key={batch.batch_id} hover>
+                      <TableCell sx={{ fontWeight: 'bold' }}>{batch.batch_id}</TableCell>
+                      <TableCell>{batch.count.toLocaleString()}</TableCell>
+                      <TableCell>{new Date(batch.lastupdated).toLocaleString()}</TableCell>
+                      <TableCell align="center">
+                        <IconButton size="small" color="error" onClick={() => handleDeleteBatch(batch.batch_id)}>
+                          <DeleteSweepIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
 
               </Table>
             </TableContainer>
@@ -775,6 +770,3 @@ export default function MasterDataPage() {
     </AppLayout>
   );
 }
-
-
-
