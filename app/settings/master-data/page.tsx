@@ -479,15 +479,18 @@ export default function MasterDataPage() {
 
       {/* Upload Progress Bar */}
       {uploadProgress.show && (
-        <Paper sx={{ m: 2, p: 2, bgcolor: '#f5f5f5' }}>
-          <Stack spacing={1}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="body2" fontWeight="bold">
-                ⏳ Uploading: {uploadProgress.processed.toLocaleString()} / {uploadProgress.total.toLocaleString()} rows
-              </Typography>
+  <Paper sx={{ m: 2, p: 2, bgcolor: '#f5f5f5' }}>
+    <Stack spacing={1}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="body2" fontWeight="bold">
+          ⏳ Uploading: {(uploadProgress.processed || 0).toLocaleString()} / {(uploadProgress.total || 0).toLocaleString()} rows
+        </Typography>
+
+              
               <Stack direction="row" spacing={1} alignItems="center">
-                <Chip label={`✓ ${uploadProgress.successCount.toLocaleString()}`} color="success" size="small" />
-                <Chip label={`✗ ${uploadProgress.errorCount.toLocaleString()}`} color="error" size="small" />
+<Chip label={`✓ ${(uploadProgress.successCount || 0).toLocaleString()}`} color="success" size="small" />
+<Chip label={`✗ ${(uploadProgress.errorCount || 0).toLocaleString()}`} color="error" size="small" />
+                
                 <IconButton size="small" onClick={handleCancelUpload} color="error">
                   <CancelIcon fontSize="small" />
                 </IconButton>
@@ -769,4 +772,5 @@ export default function MasterDataPage() {
     </AppLayout>
   );
 }
+
 
