@@ -76,7 +76,7 @@ export const masterDataAPI = {
 
 };
 
-// Inbound API
+
 // Inbound API
 export const inboundAPI = {
   createSingle: (data: any) => api.post('inbound', data),
@@ -85,7 +85,11 @@ export const inboundAPI = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   
-  multiEntry: (data: any) => api.post('inbound/multi-entry', data),
+  //multiEntry: (data: any) => api.post('inbound/multi-entry', data),
+
+  multiEntry: (entries: any[], warehouse_id: number) =>
+  api.post('inbound/multi-entry', { entries, warehouse_id }),
+
   
   getWarehouseRacks: (warehouseId: number) => api.get(`inbound/racks/${warehouseId}`),
   getBatches: (warehouseId?: string) => {
