@@ -18,7 +18,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, Close as CloseIcon } from '@mui/icons-material';
 
 import {
   Dashboard as DashboardIcon,
@@ -117,7 +117,6 @@ export default function Sidebar() {
   const navigate = (path: string) => {
     router.push(path);
     if (isMobile) setMobileOpen(false);
-    // Keep settingsOpen state unchanged intentionally
   };
 
   const drawerContent = (
@@ -137,11 +136,20 @@ export default function Sidebar() {
             <Typography fontWeight="bold">Divine WMS</Typography>
           </>
         )}
+
+        {isMobile && (
+          <IconButton
+            sx={{ marginLeft: 'auto', color: 'white' }}
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close drawer"
+          >
+            <CloseIcon />
+          </IconButton>
+        )}
       </Toolbar>
 
       <Divider sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
 
-      {/* Main Menu */}
       <List>
         {mainMenu.map((item) => {
           const Icon = item.icon;
@@ -177,7 +185,6 @@ export default function Sidebar() {
 
         <Divider sx={{ my: 2, bgcolor: 'rgba(255,255,255,0.1)' }} />
 
-        {/* Settings */}
         <ListItem
           disablePadding
           onMouseEnter={() => setSettingsHovered(true)}
@@ -206,7 +213,6 @@ export default function Sidebar() {
           </ListItemButton>
         </ListItem>
 
-        {/* Settings Dropdown */}
         <AnimatePresence>
           {settingsOpen && (!collapsed || isMobile) && (
             <motion.div
@@ -259,20 +265,14 @@ export default function Sidebar() {
 
   return (
     <div>
-      {/* MOBILE DRAWER */}
       {isMobile ? (
         <>
           <Drawer
             variant="temporary"
             open={mobileOpen}
-            onClose={(event: React.SyntheticEvent, reason: 'backdropClick' | 'escapeKeyDown') => {
-              if (reason === 'backdropClick') {
-                // Ignore backdrop clicks to avoid accidental closes
-                return;
-              }
-              setMobileOpen(false);
-            }}
+            onClose={() => null} // Disable backdrop closing!
             ModalProps={{ keepMounted: true }}
+            hideBackdrop={true}
             sx={{
               '& .MuiDrawer-paper': {
                 width: 230,
@@ -284,9 +284,9 @@ export default function Sidebar() {
             {drawerContent}
           </Drawer>
 
-          {/* MOBILE FLOATING BUTTON */}
+          {/* Floating menu button toggles drawer */}
           <IconButton
-            onClick={() => setMobileOpen(!mobileOpen)}
+            onClick={() => setMobileOpen((prev) => !prev)}
             sx={{
               position: 'fixed',
               top: 10,
@@ -301,7 +301,6 @@ export default function Sidebar() {
           </IconButton>
         </>
       ) : (
-        // DESKTOP PERMANENT DRAWER
         <Drawer
           variant="permanent"
           sx={{
@@ -319,7 +318,6 @@ export default function Sidebar() {
         </Drawer>
       )}
 
-      {/* FLYOUT PANEL FOR COLLAPSED SIDEBAR */}
       {flyoutVisible && collapsed && (
         <Paper
           onMouseEnter={() => setFlyoutHovered(true)}
