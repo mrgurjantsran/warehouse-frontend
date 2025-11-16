@@ -265,25 +265,36 @@ export default function Sidebar() {
 
   return (
     <div>
-      {isMobile ? (
-     <>
-     <Drawer
-     variant="temporary"
-     open={mobileOpen}
-     onClose={() => setMobileOpen(false)}
-     ModalProps={{ keepMounted: true }}
-     sx={{
-     '& .MuiDrawer-paper': {
-      width: 230,
-      bgcolor: '#052457ff',
-      color: 'white',
-      // zIndex can be customized if needed, but usually not required.
-     },
-     }}
-     >
-     {drawerContent}
+     {isMobile ? (
+  <>
+    <Drawer
+      variant="temporary"
+      open={mobileOpen}
+      onClose={() => setMobileOpen(false)}
+      ModalProps={{ keepMounted: true }}
+      sx={{
+        '& .MuiDrawer-paper': {
+          width: 230,
+          bgcolor: '#052457ff',
+          color: 'white',
+        },
+      }}
+    >
+      {/* Add close button at top right in drawer */}
+      <Box sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
+        <Typography fontWeight="bold" sx={{ flexGrow: 1 }}>
+          Divine WMS
+        </Typography>
+        <IconButton
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close drawer"
+          sx={{ color: 'white' }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      {drawerContent}
     </Drawer>
-
 
     {/* Floating menu icon: Only show when drawer is closed */}
     {!mobileOpen && (
@@ -302,24 +313,24 @@ export default function Sidebar() {
         <MenuIcon />
       </IconButton>
     )}
-   </>
-   ) : (
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              bgcolor: '#052457ff',
-              color: 'white',
-              transition: 'width 0.3s',
-              overflowX: 'hidden',
-            },
-          }}
-        >
-          {drawerContent}
-        </Drawer>
-      )}
+  </>
+) : (
+  <Drawer
+    variant="permanent"
+    sx={{
+      width: drawerWidth,
+      '& .MuiDrawer-paper': {
+        width: drawerWidth,
+        bgcolor: '#052457ff',
+        color: 'white',
+        transition: 'width 0.3s',
+        overflowX: 'hidden',
+      },
+    }}
+  >
+    {drawerContent}
+  </Drawer>
+)}
 
       {flyoutVisible && collapsed && (
         <Paper
