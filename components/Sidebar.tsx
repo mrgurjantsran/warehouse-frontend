@@ -266,41 +266,42 @@ export default function Sidebar() {
   return (
     <div>
       {isMobile ? (
-        <>
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={() => null} // Disable backdrop closing!
-            ModalProps={{ keepMounted: true }}
-            hideBackdrop={true}
-            sx={{
-              '& .MuiDrawer-paper': {
-                width: 230,
-                bgcolor: '#052457ff',
-                color: 'white',
-              },
-            }}
-          >
-            {drawerContent}
-          </Drawer>
+     <>
+     <Drawer
+      variant="temporary"
+      open={mobileOpen}
+      onClose={() => setMobileOpen(false)}
+      ModalProps={{ keepMounted: true }}
+      sx={{
+        '& .MuiDrawer-paper': {
+          width: 230,
+          bgcolor: '#052457ff',
+          color: 'white',
+        },
+      }}
+    >
+      {drawerContent}
+    </Drawer>
 
-          {/* Floating menu button toggles drawer */}
-          <IconButton
-            onClick={() => setMobileOpen((prev) => !prev)}
-            sx={{
-              position: 'fixed',
-              top: 10,
-              left: 10,
-              zIndex: 3000,
-              bgcolor: '#052457',
-              color: 'white',
-            }}
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-          >
-            <MenuIcon />
-          </IconButton>
-        </>
-      ) : (
+    {/* Floating menu icon: Only show when drawer is closed */}
+    {!mobileOpen && (
+      <IconButton
+        onClick={() => setMobileOpen(true)}
+        sx={{
+          position: 'fixed',
+          top: 10,
+          left: 10,
+          zIndex: 3000,
+          bgcolor: '#052457',
+          color: 'white',
+        }}
+        aria-label="Open menu"
+      >
+        <MenuIcon />
+      </IconButton>
+    )}
+   </>
+   ) : (
         <Drawer
           variant="permanent"
           sx={{
