@@ -32,7 +32,7 @@ import {
   Person as PersonIcon,
   Category as CategoryIcon,
   LocalPrintshop as PrinterIcon,
-  Menu as MenuIcon
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 
 export default function Sidebar() {
@@ -46,20 +46,25 @@ export default function Sidebar() {
     }
     return false;
   });
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   // Settings dropdown
-  const [settingsOpen, setSettingsOpen] = useState(() => pathname.startsWith('/settings'));
+  const [settingsOpen, setSettingsOpen] = useState(() =>
+    pathname.startsWith('/settings'),
+  );
 
   // Flyout for collapsed mode
   const [flyoutVisible, setFlyoutVisible] = useState(false);
   const [settingsHovered, setSettingsHovered] = useState(false);
   const [flyoutHovered, setFlyoutHovered] = useState(false);
 
-  // Detect mobile
+  // Detect mobile reliably and update on resize
   const checkMobile = useCallback(() => {
-    setIsMobile(window.innerWidth < 768);
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.innerWidth < 768);
+    }
   }, []);
 
   useEffect(() => {
@@ -68,7 +73,7 @@ export default function Sidebar() {
     return () => window.removeEventListener('resize', checkMobile);
   }, [checkMobile]);
 
-  // Flyout for collapsed sidebar
+  // Hide flyout if sidebar is not collapsed
   useEffect(() => {
     if (collapsed) {
       setFlyoutVisible(settingsHovered || flyoutHovered);
@@ -77,10 +82,17 @@ export default function Sidebar() {
     }
   }, [collapsed, settingsHovered, flyoutHovered]);
 
-  // Save collapsed state in localStorage
+  // Save collapsed state to localStorage on change
   useEffect(() => {
-    localStorage.setItem('sidebar-collapsed', collapsed.toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebar-collapsed', collapsed.toString());
+    }
   }, [collapsed]);
+
+  // Close mobile drawer on route change to keep UI consistent
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const drawerWidth = collapsed ? 70 : 230;
 
@@ -89,7 +101,7 @@ export default function Sidebar() {
     { label: 'Inbound', icon: InventoryIcon, path: '/inbound' },
     { label: 'QC', icon: CheckIcon, path: '/qc' },
     { label: 'Picking', icon: AssignmentIcon, path: '/picking' },
-    { label: 'Outbound', icon: ShippingIcon, path: '/outbound' }
+    { label: 'Outbound', icon: ShippingIcon, path: '/outbound' },
   ];
 
   const settingsMenu = [
@@ -99,13 +111,13 @@ export default function Sidebar() {
     { label: 'Users', icon: PersonIcon, path: '/settings/users' },
     { label: 'Permissions', icon: SettingsIcon, path: '/settings/permissions' },
     { label: 'Printers', icon: PrinterIcon, path: '/settings/printers' },
-    { label: 'Reports', icon: AssignmentIcon, path: '/settings/reports' }
+    { label: 'Reports', icon: AssignmentIcon, path: '/settings/reports' },
   ];
 
   const navigate = (path: string) => {
     router.push(path);
     if (isMobile) setMobileOpen(false);
-    // Keep settingsOpen unchanged
+    // Keep settingsOpen state unchanged intentionally
   };
 
   const drawerContent = (
@@ -114,6 +126,7 @@ export default function Sidebar() {
         <IconButton
           onClick={() => (isMobile ? setMobileOpen(false) : setCollapsed(!collapsed))}
           sx={{ color: 'white' }}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <MenuIcon />
         </IconButton>
@@ -136,21 +149,21 @@ export default function Sidebar() {
 
           return (
             <ListItem key={item.path} disablePadding>
-              <Tooltip title={collapsed ? item.label : ''} placement="right">
+              <Tooltip title={collapsed ? item.label : ''} placement="right" arrow>
                 <ListItemButton
                   onClick={() => navigate(item.path)}
                   sx={{
                     mx: 1,
                     borderRadius: 1,
                     bgcolor: active ? 'rgba(59,130,246,0.2)' : 'transparent',
-                    color: active ? '#60a5fa' : 'rgba(255,255,255,0.7)'
+                    color: active ? '#60a5fa' : 'rgba(255,255,255,0.7)',
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       color: 'inherit',
                       minWidth: collapsed ? 'auto' : 40,
-                      justifyContent: collapsed ? 'center' : 'flex-start'
+                      justifyContent: collapsed ? 'center' : 'flex-start',
                     }}
                   >
                     <Icon />
@@ -166,33 +179,32 @@ export default function Sidebar() {
 
         {/* Settings */}
         <ListItem
-  disablePadding
-  onMouseEnter={() => setSettingsHovered(true)}
-  onMouseLeave={() => setSettingsHovered(false)}
->
-  <ListItemButton
-    onClick={() => setSettingsOpen(!settingsOpen)}
-    sx={{ mx: 1, borderRadius: 1, color: 'rgba(255,255,255,0.7)' }}
-  >
-    <ListItemIcon
-      sx={{
-        color: 'inherit',
-        minWidth: collapsed ? 'auto' : 40,
-        justifyContent: collapsed ? 'center' : 'flex-start'
-      }}
-    >
-      <SettingsIcon />
-    </ListItemIcon>
+          disablePadding
+          onMouseEnter={() => setSettingsHovered(true)}
+          onMouseLeave={() => setSettingsHovered(false)}
+        >
+          <ListItemButton
+            onClick={() => setSettingsOpen(!settingsOpen)}
+            sx={{ mx: 1, borderRadius: 1, color: 'rgba(255,255,255,0.7)' }}
+          >
+            <ListItemIcon
+              sx={{
+                color: 'inherit',
+                minWidth: collapsed ? 'auto' : 40,
+                justifyContent: collapsed ? 'center' : 'flex-start',
+              }}
+            >
+              <SettingsIcon />
+            </ListItemIcon>
 
-    {!collapsed && (
-      <>
-        <ListItemText primary="Settings" />
-        {settingsOpen ? <ExpandLess /> : <ExpandMore />}
-      </>
-    )}
-  </ListItemButton>
-</ListItem>
-
+            {!collapsed && (
+              <>
+                <ListItemText primary="Settings" />
+                {settingsOpen ? <ExpandLess /> : <ExpandMore />}
+              </>
+            )}
+          </ListItemButton>
+        </ListItem>
 
         {/* Settings Dropdown */}
         <AnimatePresence>
@@ -216,7 +228,7 @@ export default function Sidebar() {
                           borderRadius: 1,
                           color: active ? '#60a5fa' : 'rgba(255,255,255,0.8)',
                           bgcolor: active ? 'rgba(59,130,246,0.2)' : 'transparent',
-                          my: 0.5
+                          my: 0.5,
                         }}
                       >
                         <ListItemIcon sx={{ color: 'inherit', minWidth: 30 }}>
@@ -249,22 +261,41 @@ export default function Sidebar() {
     <div>
       {/* MOBILE DRAWER */}
       {isMobile ? (
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            '& .MuiDrawer-paper': {
-              width: 230,
-              bgcolor: '#052457ff',
-              color: 'white'
-            }
-          }}
-        >
-          {drawerContent}
-        </Drawer>
+        <>
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={() => setMobileOpen(false)}
+            ModalProps={{ keepMounted: true }}
+            sx={{
+              '& .MuiDrawer-paper': {
+                width: 230,
+                bgcolor: '#052457ff',
+                color: 'white',
+              },
+            }}
+          >
+            {drawerContent}
+          </Drawer>
+
+          {/* MOBILE FLOATING BUTTON */}
+          <IconButton
+            onClick={() => setMobileOpen(true)}
+            sx={{
+              position: 'fixed',
+              top: 10,
+              left: 10,
+              zIndex: 3000,
+              bgcolor: '#052457',
+              color: 'white',
+            }}
+            aria-label="Open menu"
+          >
+            <MenuIcon />
+          </IconButton>
+        </>
       ) : (
+        // DESKTOP PERMANENT DRAWER
         <Drawer
           variant="permanent"
           sx={{
@@ -274,15 +305,15 @@ export default function Sidebar() {
               bgcolor: '#052457ff',
               color: 'white',
               transition: 'width 0.3s',
-              overflowX: 'hidden'
-            }
+              overflowX: 'hidden',
+            },
           }}
         >
           {drawerContent}
         </Drawer>
       )}
 
-      {/* FLYOUT PANEL */}
+      {/* FLYOUT PANEL FOR COLLAPSED SIDEBAR */}
       {flyoutVisible && collapsed && (
         <Paper
           onMouseEnter={() => setFlyoutHovered(true)}
@@ -297,7 +328,7 @@ export default function Sidebar() {
             color: 'white',
             p: 1,
             borderRadius: 1,
-            zIndex: 2000
+            zIndex: 2000,
           }}
         >
           <Typography sx={{ px: 1, pb: 1, fontSize: 13, opacity: 0.7 }}>Settings</Typography>
@@ -322,24 +353,6 @@ export default function Sidebar() {
           </List>
         </Paper>
       )}
-
-      {/* MOBILE FLOATING BUTTON */}
-      {isMobile && (
-        <IconButton
-          onClick={() => setMobileOpen(true)}
-          sx={{
-            position: 'fixed',
-            top: 10,
-            left: 10,
-            zIndex: 3000,
-            bgcolor: '#052457',
-            color: 'white'
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
-      )}
     </div>
   );
 }
-
