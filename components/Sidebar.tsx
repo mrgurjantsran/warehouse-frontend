@@ -264,113 +264,115 @@ export default function Sidebar() {
   );
 
   return (
-    <div>
-     {isMobile ? (
-  <>
-    <Drawer
-      variant="temporary"
-      open={mobileOpen}
-      onClose={() => setMobileOpen(false)}
-      ModalProps={{ keepMounted: true }}
-      sx={{
-        '& .MuiDrawer-paper': {
-          width: 230,
-          bgcolor: '#052457ff',
-          color: 'white',
-        },
-      }}
-    >
-      {/* Add close button at top right in drawer */}
-      <Box sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
-        <Typography fontWeight="bold" sx={{ flexGrow: 1 }}>
-          Divine WMS
-        </Typography>
-        <IconButton
-          onClick={() => setMobileOpen(false)}
-          aria-label="Close drawer"
-          sx={{ color: 'white' }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      {drawerContent}
-    </Drawer>
-
-    {/* Floating menu icon: Only show when drawer is closed */}
-    {!mobileOpen && (
-      <IconButton
-        onClick={() => setMobileOpen(true)}
-        sx={{
-          position: 'fixed',
-          top: 10,
-          left: 10,
-          zIndex: 3000,
-          bgcolor: '#052457',
-          color: 'white',
-        }}
-        aria-label="Open menu"
-      >
-        <MenuIcon />
-      </IconButton>
-    )}
-  </>
-) : (
-  <Drawer
-    variant="permanent"
-    sx={{
-      width: drawerWidth,
-      '& .MuiDrawer-paper': {
-        width: drawerWidth,
-        bgcolor: '#052457ff',
-        color: 'white',
-        transition: 'width 0.3s',
-        overflowX: 'hidden',
-      },
-    }}
-  >
-    {drawerContent}
-  </Drawer>
-)}
-
-      {flyoutVisible && collapsed && (
-        <Paper
-          onMouseEnter={() => setFlyoutHovered(true)}
-          onMouseLeave={() => setFlyoutHovered(false)}
-          elevation={6}
+  <div>
+    {isMobile ? (
+      <>
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{ keepMounted: true }}
           sx={{
-            position: 'fixed',
-            top: 70,
-            left: drawerWidth,
-            width: 220,
-            bgcolor: '#052457',
-            color: 'white',
-            p: 1,
-            borderRadius: 1,
-            zIndex: 2000,
+            '& .MuiDrawer-paper': {
+              width: 230,
+              bgcolor: '#052457ff',
+              color: 'white',
+            },
           }}
         >
-          <Typography sx={{ px: 1, pb: 1, fontSize: 13, opacity: 0.7 }}>Settings</Typography>
+          {/* Top bar with close button for mobile only */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1 }}>
+            <WarehouseIcon sx={{ color: '#3b82f6' }} />
+            <Typography fontWeight="bold" sx={{ flexGrow: 1 }}>
+              Divine WMS
+            </Typography>
+            <IconButton
+              onClick={() => setMobileOpen(false)}
+              sx={{ color: 'white' }}
+              aria-label="Close menu"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          {/* The main drawer content below the top bar */}
+          <Divider sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+          {drawerContent}
+        </Drawer>
+        {/* Floating menu icon: Only show when drawer is closed */}
+        {!mobileOpen && (
+          <IconButton
+            onClick={() => setMobileOpen(true)}
+            sx={{
+              position: 'fixed',
+              top: 10,
+              left: 10,
+              zIndex: 3000,
+              bgcolor: '#052457',
+              color: 'white',
+            }}
+            aria-label="Open menu"
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+      </>
+    ) : (
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            bgcolor: '#052457ff',
+            color: 'white',
+            transition: 'width 0.3s',
+            overflowX: 'hidden',
+          },
+        }}
+      >
+        {drawerContent}
+      </Drawer>
+    )}
 
-          <List>
-            {settingsMenu.map((item) => {
-              const Icon = item.icon;
-              return (
-                <ListItem key={item.path} disablePadding>
-                  <ListItemButton
-                    onClick={() => navigate(item.path)}
-                    sx={{ borderRadius: 1, color: 'rgba(255,255,255,0.8)' }}
-                  >
-                    <ListItemIcon sx={{ color: 'inherit' }}>
-                      <Icon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary={item.label} />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Paper>
-      )}
-    </div>
-  );
+    {flyoutVisible && collapsed && (
+      <Paper
+        onMouseEnter={() => setFlyoutHovered(true)}
+        onMouseLeave={() => setFlyoutHovered(false)}
+        elevation={6}
+        sx={{
+          position: 'fixed',
+          top: 70,
+          left: drawerWidth,
+          width: 220,
+          bgcolor: '#052457',
+          color: 'white',
+          p: 1,
+          borderRadius: 1,
+          zIndex: 2000,
+        }}
+      >
+        <Typography sx={{ px: 1, pb: 1, fontSize: 13, opacity: 0.7 }}>Settings</Typography>
+        <List>
+          {settingsMenu.map((item) => {
+            const Icon = item.icon;
+            return (
+              <ListItem key={item.path} disablePadding>
+                <ListItemButton
+                  onClick={() => navigate(item.path)}
+                  sx={{ borderRadius: 1, color: 'rgba(255,255,255,0.8)' }}
+                >
+                  <ListItemIcon sx={{ color: 'inherit' }}>
+                    <Icon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Paper>
+    )}
+  </div>
+);
+
 }
