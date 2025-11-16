@@ -76,7 +76,6 @@ export const masterDataAPI = {
 
 };
 
-
 // Inbound API
 export const inboundAPI = {
   createSingle: (data: any) => api.post('inbound', data),
@@ -85,11 +84,10 @@ export const inboundAPI = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   
-  //multiEntry: (data: any) => api.post('inbound/multi-entry', data),
+  getAllInboundWSNs: () => api.get('inbound/wsns/all'),
 
   multiEntry: (entries: any[], warehouse_id: number) =>
   api.post('inbound/multi-entry', { entries, warehouse_id }),
-
   
   getWarehouseRacks: (warehouseId: number) => api.get(`inbound/racks/${warehouseId}`),
   getBatches: (warehouseId?: string) => {
@@ -132,12 +130,39 @@ export const rackAPI = {
   }),
   update: (id: number, data: any) => api.put(`racks/${id}`, data),
   delete: (id: number) => api.delete(`racks/${id}`),
-  toggleStatus: (id: number) => api.patch(`racks/${id}/toggle`)
+  toggleStatus: (id: number) => api.patch(`racks/${id}/toggle`),
+  getByWarehouse: (warehouseId: number) => api.get('racks/by-warehouse', 
+    { params: { warehouse_id: warehouseId } })
+
 };
+  
+
 export default api;
 
 
-
+// QC API
+export const qcAPI = {
+  createSingleQC: (data: any) => api.post('qc/single', data),
+  multiQCEntry: (data: any) => api.post('qc/multi', data),
+  bulkQCUpload: (formData: FormData) => api.post('qc/bulk', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  getQCList: (params: any) => api.get('qc/list', { params }),
+  getQCBatches: (warehouseId: number) => api.get('qc/batches', { params: { warehouseId } }),
+  deleteQCBatch: (batchId: string) => api.delete(`qc/batch/${batchId}`),
+  getInboundByWSN: (wsn: string, warehouseId: number) => api.get(`qc/inbound/${wsn}`, { params: { warehouse_id: warehouseId } }),
+  getBrands: (warehouseId?: number) => api.get('qc/brands', { params: { warehouse_id: warehouseId } }),
+  getCategories: (warehouseId?: number) => api.get('qc/categories', { params: { warehouse_id: warehouseId } }),
+  //getExistingWSNs: (warehouseId: number) => api.get('qc/existing-wsns', { params: { warehouse_id: warehouseId } }),
+  checkWSNExists: (wsn: string, warehouseId: number) => 
+    api.get(`qc/check-wsn`, { params: { wsn, warehouse_id: warehouseId } }),
+  
+  updateSingleQC: (qcId: number, data: any) => 
+    api.put(`qc/${qcId}`, data),
+  
+  getExistingWSNs: (warehouseId: number) => 
+    api.get(`qc/existing-wsns`, { params: { warehouse_id: warehouseId } })
+};
 
 
 
