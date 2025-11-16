@@ -263,42 +263,42 @@ export default function Sidebar() {
       {isMobile ? (
         <>
           <Drawer
-  variant="temporary"
-  open={mobileOpen}
-  onClose={() => {
-    // Do nothing to prevent closing on backdrop/tap outside
-  }}
-  ModalProps={{
-    keepMounted: true,
-    onBackdropClick: (event) => event.stopPropagation(), // Prevent closing on outside tap
-  }}
-  hideBackdrop={false} // or true if you want no backdrop
-  sx={{
-    '& .MuiDrawer-paper': {
-      width: 230,
-      bgcolor: '#052457ff',
-      color: 'white',
-    },
-  }}
->
-  {drawerContent}
-</Drawer>
+            variant="temporary"
+            open={mobileOpen}
+            onClose={(event: React.SyntheticEvent, reason: 'backdropClick' | 'escapeKeyDown') => {
+              if (reason === 'backdropClick') {
+                // Ignore backdrop clicks to avoid accidental closes
+                return;
+              }
+              setMobileOpen(false);
+            }}
+            ModalProps={{ keepMounted: true }}
+            sx={{
+              '& .MuiDrawer-paper': {
+                width: 230,
+                bgcolor: '#052457ff',
+                color: 'white',
+              },
+            }}
+          >
+            {drawerContent}
+          </Drawer>
 
           {/* MOBILE FLOATING BUTTON */}
-         <IconButton
-  onClick={() => setMobileOpen(!mobileOpen)}
-  sx={{
-    position: 'fixed',
-    top: 10,
-    left: 10,
-    zIndex: 3000,
-    bgcolor: '#052457',
-    color: 'white',
-  }}
-  aria-label={mobileOpen ? "Close menu" : "Open menu"}
->
-  <MenuIcon />
-</IconButton>
+          <IconButton
+            onClick={() => setMobileOpen(!mobileOpen)}
+            sx={{
+              position: 'fixed',
+              top: 10,
+              left: 10,
+              zIndex: 3000,
+              bgcolor: '#052457',
+              color: 'white',
+            }}
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          >
+            <MenuIcon />
+          </IconButton>
         </>
       ) : (
         // DESKTOP PERMANENT DRAWER
@@ -362,4 +362,3 @@ export default function Sidebar() {
     </div>
   );
 }
-
