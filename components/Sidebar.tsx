@@ -268,20 +268,22 @@ export default function Sidebar() {
       {isMobile ? (
      <>
      <Drawer
-      variant="temporary"
-      open={mobileOpen}
-      onClose={() => setMobileOpen(false)}
-      ModalProps={{ keepMounted: true }}
-      sx={{
-        '& .MuiDrawer-paper': {
-          width: 230,
-          bgcolor: '#052457ff',
-          color: 'white',
-        },
-      }}
-    >
-      {drawerContent}
+     variant="temporary"
+     open={mobileOpen}
+     onClose={() => setMobileOpen(false)}
+     ModalProps={{ keepMounted: true }}
+     sx={{
+     '& .MuiDrawer-paper': {
+      width: 230,
+      bgcolor: '#052457ff',
+      color: 'white',
+      // zIndex can be customized if needed, but usually not required.
+     },
+     }}
+     >
+     {drawerContent}
     </Drawer>
+
 
     {/* Floating menu icon: Only show when drawer is closed */}
     {!mobileOpen && (
