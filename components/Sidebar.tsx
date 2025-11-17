@@ -17,7 +17,7 @@ import {
   Paper,
   Tooltip,
 } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, color } from 'framer-motion';
 import { ExpandLess, ExpandMore, Close as CloseIcon } from '@mui/icons-material';
 
 import {
@@ -124,7 +124,7 @@ export default function Sidebar() {
       <Toolbar sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <IconButton
           onClick={() => (isMobile ? setMobileOpen(false) : setCollapsed(!collapsed))}
-          sx={{ color: 'white' }}
+          sx={{ color: 'white', margin:-1 }}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <MenuIcon />
@@ -134,10 +134,11 @@ export default function Sidebar() {
           <>
             {/* <WarehouseIcon sx={{ color: '#3b82f6' }} /> */}
             <Typography fontWeight="bold">Divine WMS</Typography>
+            
           </>
         )}
 
-        {isMobile && (
+        {/* {isMobile && (
           <IconButton
             sx={{ marginLeft: 'auto', color: 'white' }}
             onClick={() => setMobileOpen(false)}
@@ -145,7 +146,7 @@ export default function Sidebar() {
           >
             <CloseIcon />
           </IconButton>
-        )}
+        )} */}
       </Toolbar>
 
       <Divider sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
@@ -363,4 +364,3 @@ export default function Sidebar() {
     </div>
   );
 }
-
