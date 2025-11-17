@@ -20,6 +20,7 @@ import { getStoredUser } from '@/lib/auth';
 import AppLayout from '@/components/AppLayout';
 import toast, { Toaster } from 'react-hot-toast';
 import * as XLSX from 'xlsx';
+import NoWarehouseScreen from '@/components/NoWarehouse';
 
 interface QCMultiRow {
   wsn: string;
@@ -507,7 +508,22 @@ export default function QCPage() {
     return <AppLayout><Box sx={{ p: 3 }}>Loading...</Box></AppLayout>;
   }
 
- 
+    // No Warehouse Selected screen
+  if (!activeWarehouse) {
+  return (
+    <AppLayout>
+      <NoWarehouseScreen />
+    </AppLayout>
+  );
+  }
+
+  if (!user) {
+  return (
+    <AppLayout>
+      <Box sx={{ p: 3 }}>Loading...</Box>
+    </AppLayout>
+  );
+  }
 
   
 
@@ -1226,3 +1242,4 @@ export default function QCPage() {
     </AppLayout>
   );
 }
+
