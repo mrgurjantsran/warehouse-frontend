@@ -1043,7 +1043,7 @@ export default function QCPage() {
                   </Box>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={() => setColumnSettingsOpen(false)} variant="contained">Done</Button>
+                 <Button onClick={() => setGradeSettingsOpen(false)} variant="contained">Done</Button>
                 </DialogActions>
               </Dialog>
             </Stack>
@@ -1257,3 +1257,4 @@ export default function QCPage() {
     </AppLayout>
   );
 }
+
