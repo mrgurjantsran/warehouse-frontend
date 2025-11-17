@@ -56,7 +56,8 @@ function generateEmptyRows(count: number, qcBy: string = ''): QCMultiRow[] {
 export default function QCPage() {
   const router = useRouter();
   const context = useWarehouse();
-  const activeWarehouse = (context as any)?.activeWarehouse;
+  const activeWarehouse = context?.activeWarehouse;
+  //const activeWarehouse = (context as any)?.activeWarehouse;
   const warehouseId = (context as any)?.warehouseId;
 
   const [user, setUser] = useState<any>(null);
@@ -503,13 +504,43 @@ export default function QCPage() {
     }
   };
 
-  if (!user || !activeWarehouse) {
-    return <AppLayout><Box sx={{ p: 3 }}>Loading...</Box></AppLayout>;
-  }
-
  
-
-  
+  if (!activeWarehouse) {
+    return (
+      <AppLayout>
+        <Box
+          sx={{
+            p: 6,
+            textAlign: 'center',
+            minHeight: '60vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <Box
+            sx={{
+              p: 5,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: 4,
+              color: 'white',
+              boxShadow: '0 20px 60px rgba(102, 126, 234, 0.4)',
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+              ⚠️ No Warehouse Selected
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              Please select a warehouse to continue
+            </Typography>
+          </Box>
+        </Box>
+      </AppLayout>
+    );
+  }
+ 
+ 
 
   return (
     <AppLayout>
@@ -821,6 +852,14 @@ export default function QCPage() {
                   <Button onClick={add10Rows} size="small" variant="outlined" sx={{ borderRadius: 1, fontWeight: 600, fontSize: '0.65rem', flex: 1 }}>+10</Button>
                   <Button onClick={add30Rows} size="small" variant="outlined" sx={{ borderRadius: 1, fontWeight: 600, fontSize: '0.65rem', flex: 1 }}>+30</Button>
                 </Stack>
+
+                <Button
+                onClick={() => setGradeSettingsOpen(true)} variant="outlined" size="small" 
+                sx={{ borderRadius: 1, fontWeight: 700, fontSize: '0.65rem', background: '#f3f4f6' }}  startIcon={<SettingsIcon />} 
+                >  
+                Grade Settings 
+                </Button>
+                
                 <Button
                   onClick={() => setColumnSettingsOpen(true)}
                   variant="outlined"
@@ -955,15 +994,7 @@ export default function QCPage() {
                 {multiLoading ? '⏳ Submitting...' : `✓ Submit All (${multiRows.filter(r => r.wsn?.trim()).length} rows)`}
               </Button>
 
-              <Button
-  onClick={() => setGradeSettingsOpen(true)}
-  variant="outlined"
-  size="small"
-  sx={{ borderRadius: 1, fontWeight: 700, fontSize: '0.65rem', background: '#f3f4f6' }}
-  startIcon={<SettingsIcon />}
- >
-  Grade Settings
- </Button>
+
 
               <Dialog open={gradeSettingsOpen} onClose={() => setGradeSettingsOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle>⚙️ QC Grade Management</DialogTitle>
