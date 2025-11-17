@@ -20,7 +20,6 @@ import { getStoredUser } from '@/lib/auth';
 import AppLayout from '@/components/AppLayout';
 import toast, { Toaster } from 'react-hot-toast';
 import * as XLSX from 'xlsx';
-import NoWarehouseScreen from '@/components/NoWarehouse';
 
 interface QCMultiRow {
   wsn: string;
@@ -504,17 +503,13 @@ export default function QCPage() {
     }
   };
 
-  // No Warehouse Selected screen
-  if (!activeWarehouse) {
-  return (
-    <AppLayout>
-      <NoWarehouseScreen />
-    </AppLayout>
-  );
+  if (!user || !activeWarehouse) {
+    return <AppLayout><Box sx={{ p: 3 }}>Loading...</Box></AppLayout>;
   }
 
  
-  //--UI--////////////////////////////////////////////////////////////////////////////////////////////
+
+  
 
   return (
     <AppLayout>
@@ -826,16 +821,6 @@ export default function QCPage() {
                   <Button onClick={add10Rows} size="small" variant="outlined" sx={{ borderRadius: 1, fontWeight: 600, fontSize: '0.65rem', flex: 1 }}>+10</Button>
                   <Button onClick={add30Rows} size="small" variant="outlined" sx={{ borderRadius: 1, fontWeight: 600, fontSize: '0.65rem', flex: 1 }}>+30</Button>
                 </Stack>
-
-<Button
-  onClick={() => setGradeSettingsOpen(true)}
-  variant="outlined"
-  size="small"
-  sx={{ borderRadius: 1, fontWeight: 700, fontSize: '0.65rem' }}
-  startIcon={<SettingsIcon />}
->
-  Grade Settings
-</Button>
                 <Button
                   onClick={() => setColumnSettingsOpen(true)}
                   variant="outlined"
@@ -970,7 +955,15 @@ export default function QCPage() {
                 {multiLoading ? '⏳ Submitting...' : `✓ Submit All (${multiRows.filter(r => r.wsn?.trim()).length} rows)`}
               </Button>
 
-
+              <Button
+  onClick={() => setGradeSettingsOpen(true)}
+  variant="outlined"
+  size="small"
+  sx={{ borderRadius: 1, fontWeight: 700, fontSize: '0.65rem', background: '#f3f4f6' }}
+  startIcon={<SettingsIcon />}
+ >
+  Grade Settings
+ </Button>
 
               <Dialog open={gradeSettingsOpen} onClose={() => setGradeSettingsOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle>⚙️ QC Grade Management</DialogTitle>
@@ -1019,7 +1012,7 @@ export default function QCPage() {
                   </Box>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={() => setGradeSettingsOpen(false)} variant="contained">Done</Button>
+                  <Button onClick={() => setColumnSettingsOpen(false)} variant="contained">Done</Button>
                 </DialogActions>
               </Dialog>
             </Stack>
@@ -1233,4 +1226,3 @@ export default function QCPage() {
     </AppLayout>
   );
 }
-
