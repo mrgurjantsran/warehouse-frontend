@@ -132,7 +132,7 @@ export default function Sidebar() {
 
         {!collapsed && (
           <>
-            <WarehouseIcon sx={{ color: '#3b82f6' }} />
+            {/* <WarehouseIcon sx={{ color: '#3b82f6' }} /> */}
             <Typography fontWeight="bold">Divine WMS</Typography>
           </>
         )}
@@ -363,3 +363,4 @@ export default function Sidebar() {
     </div>
   );
 }
+
