@@ -138,7 +138,7 @@ export default function Sidebar() {
           </>
         )}
 
-        {/* {isMobile && (
+        {isMobile && (
           <IconButton
             sx={{ marginLeft: 'auto', color: 'white' }}
             onClick={() => setMobileOpen(false)}
@@ -146,7 +146,7 @@ export default function Sidebar() {
           >
             <CloseIcon />
           </IconButton>
-        )} */}
+        )}
       </Toolbar>
 
       <Divider sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
