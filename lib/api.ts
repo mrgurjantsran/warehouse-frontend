@@ -137,9 +137,6 @@ export const rackAPI = {
 };
   
 
-export default api;
-
-
 // QC API
 export const qcAPI = {
   createSingleQC: (data: any) => api.post('qc/single', data),
@@ -164,6 +161,4 @@ export const qcAPI = {
     api.get(`qc/existing-wsns`, { params: { warehouse_id: warehouseId } })
 };
 
-
-
-
+export default api;
