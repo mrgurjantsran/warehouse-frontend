@@ -513,16 +513,7 @@ export default function QCPage() {
   );
   }
 
-  if (!user) {
-  return (
-    <AppLayout>
-      <Box sx={{ p: 3 }}>Loading...</Box>
-    </AppLayout>
-  );
-  }
-
  
-
   //--UI--////////////////////////////////////////////////////////////////////////////////////////////
 
   return (
@@ -1242,3 +1233,4 @@ export default function QCPage() {
     </AppLayout>
   );
 }
+
