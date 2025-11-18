@@ -533,7 +533,13 @@ export default function MasterDataPage() {
 
       {/* Header */}
       <AppBar position="static" elevation={0} sx={{ bgcolor: 'white', color: 'text.primary', mb: 3 }}>
-        <Toolbar>
+        <Toolbar
+  sx={{
+    flexWrap: 'wrap',          // ★ allows items to go to next line
+    gap: 1,
+  }}
+>
+
           <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1 }}>
             📊 Master Data Management
           </Typography>
@@ -569,9 +575,18 @@ export default function MasterDataPage() {
         </Paper>
       )}
 
-      <Box sx={{ p: 2 }}>
+     <Box
+  sx={{
+    p: { xs: 1, md: 2 },
+    width: '100%',
+    overflowX: 'hidden',
+    maxWidth: '100vw',
+  }}
+>
+
         {/* Tabs */}
-        <Paper sx={{ mb: 2 }}>
+        <Paper sx={{ mb: 2, overflowX: 'auto' }}>
+
           <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
             <Tab label="📋 Master Data List" />
             <Tab label="📦 Batch Management" />
@@ -583,7 +598,12 @@ export default function MasterDataPage() {
           <>
             {/* Action Bar */}
             <Paper sx={{ p: 2, mb: 2 }}>
-              <Stack direction="row" spacing={2}>
+              <Stack
+  direction={{ xs: 'column', sm: 'row' }}
+  spacing={1}
+  sx={{ width: '100%' }}
+>
+
                 <Button variant="outlined" size="small" startIcon={<VisibilityIcon />} onClick={(e) => setColumnMenuAnchor(e.currentTarget)}>
                   Columns
                 </Button>
@@ -617,7 +637,16 @@ export default function MasterDataPage() {
                   <CircularProgress />
                 </Box>
               )}
-              <TableContainer sx={{ maxHeight: 'calc(100vh - 350px)' }}>
+              <TableContainer
+  sx={{
+    maxHeight: 'calc(100vh - 350px)',
+    overflowX: 'auto',             // ★ allow horizontal scroll
+    width: '100%',
+    maxWidth: '100vw',             // ★ important for mobile!
+    display: 'block'
+  }}
+>
+
                 <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow>
@@ -670,7 +699,8 @@ export default function MasterDataPage() {
         {/* Tab 2: Batch Management */}
         {tabValue === 1 ? (
           <Paper sx={{ p: 2 }}>
-            <TableContainer>
+            <TableContainer sx={{ overflowX: 'auto' }}>
+
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ bgcolor: 'grey.100' }}>
