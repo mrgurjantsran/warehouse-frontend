@@ -13,15 +13,27 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <Box
       sx={{
         display: 'flex',
-        width: '100%',          // ★ Prevent layout expansion
-        maxWidth: '100%',       // ★ Prevent stretching caused by wide tables
-        overflowX: 'hidden',    // ★ CRITICAL FIX → stops page from scrolling right
+        width: '100%',          
+        maxWidth: '100%',
+        overflowX: 'hidden',        // ★ prevents whole page from shifting right
+        position: 'relative',
       }}
       suppressHydrationWarning
     >
       <CssBaseline />
-      <Sidebar />
 
+      {/* SIDEBAR */}
+      <Box
+        sx={{
+          width: { xs: 0, sm: 230 },   // ★ Auto-hide sidebar on mobile
+          flexShrink: 0,
+          overflow: 'hidden',
+        }}
+      >
+        <Sidebar />
+      </Box>
+
+      {/* MAIN CONTENT AREA */}
       <Box
         component="main"
         sx={{
@@ -30,7 +42,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
           minHeight: '100vh',
           width: '100%',
           maxWidth: '100%',
-          overflowX: 'hidden',   // ★ Ensures only table scrolls, not page
+          overflowX: 'hidden',       // ★ stops entire screen from scrolling horizontally
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
         }}
         suppressHydrationWarning
       >
