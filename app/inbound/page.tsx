@@ -22,7 +22,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 
 // Constants
-const DEFAULT_MULTI_COLUMNS = ['wsn', 'inbound_date', 'vehicle_no', 'product_serial_number', 'rack_no', 'unload_remarks'];
+const DEFAULT_MULTI_COLUMNS = ['wsn', 'product_serial_number', 'rack_no', 'unload_remarks'];
 const ALL_MASTER_COLUMNS = ['wid', 'fsn', 'product_title', 'brand', 'mrp', 'fsp', 'hsn_sac', 'igst_rate', 'cms_vertical', 'fkt_link'];
 
 export default function InboundPage() {
@@ -63,11 +63,12 @@ export default function InboundPage() {
     }));
   };
 
+  // States
   const [multiRows, setMultiRows] = useState<any[]>(generateEmptyRows(5));
   const [multiLoading, setMultiLoading] = useState(false);
   const [multiResults, setMultiResults] = useState<any[]>([]);
   const [duplicateWSNs, setDuplicateWSNs] = useState<Set<string>>(new Set());
-  const [visibleColumns, setVisibleColumns] = useState(DEFAULT_MULTI_COLUMNS);
+  const [visibleColumns, setVisibleColumns] = useState(DEFAULT_MULTI_COLUMNS);  
   const [columnSettingsOpen, setColumnSettingsOpen] = useState(false);
   const [commonDate, setCommonDate] = useState(new Date().toISOString().split('T')[0]);
   const [commonVehicle, setCommonVehicle] = useState('');
@@ -575,6 +576,22 @@ export default function InboundPage() {
     );
   }
 
+  const [existingInboundWSNs, setExistingInboundWSNs] = useState(new Set());
+
+useEffect(() => {
+  async function fetchExistingWSNs() {
+    try {
+      const res = await inboundAPI.getAllInboundWSNs();
+      setExistingInboundWSNs(new Set(res.data)); // assuming res.data is string[] of WSNs
+    } catch (error) {
+      console.error('Failed to fetch existing inbound WSNs', error);
+    }
+  }
+  fetchExistingWSNs();
+}, []);
+
+
+
 
   //>>>>>>>>>>>>>>>>>>>>>> UI >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   return (
@@ -722,7 +739,7 @@ export default function InboundPage() {
 
         {/* TAB 0: SINGLE ENTRY */}
         {tabValue === 0 && (            
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 1 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 2 }}>
             <Box sx={{ 
               animation: 'slideInLeft 0.5s ease-out',
               '@keyframes slideInLeft': {
@@ -759,7 +776,7 @@ export default function InboundPage() {
                     <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1a237e', fontSize: '0.8rem' }}>
                       Entry Form
                     </Typography>
-                  </Stack>                    <Stack spacing={0.8}>
+                  </Stack>                    <Stack spacing={1.8}>
                     <TextField
                       fullWidth
                       size="small"
@@ -1331,483 +1348,504 @@ export default function InboundPage() {
           </Box>
         )}
 
-        {/* TAB 2: MULTI ENTRY */}
-        {tabValue === 2 && (
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: 'calc(100vh - 230px)',
-            animation: 'fadeIn 0.5s ease-out',
-            '@keyframes fadeIn': {
-              '0%': { opacity: 0 },
-              '100%': { opacity: 1 }
-            }
-          }}>
-            {/* TOP CONTROLS - FIXED */}
-            <Card sx={{ 
-              mb: 1,
-              borderRadius: 1.5,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-              background: 'rgba(255, 255, 255, 0.98)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              flexShrink: 0,
-              position: 'sticky',
-              top: 0,
-              zIndex: 100,
-              width: '100%',
-              boxSizing: 'border-box'
-            }}>
-              <CardContent sx={{ p: 1.2, width: '100%', boxSizing: 'border-box' }}>
-                <Stack direction="row" spacing={0.8} flexWrap="wrap" alignItems="center" sx={{ gap: 0.8, width: '100%' }}>
-                  <Box sx={{ display: 'flex', gap: 1.8, flexWrap: 'wrap' }}>
-                      <TextField
-                        size="small"
-                        label="Date"
-                        type="date"
-                        value={commonDate}
-                        onChange={(e) => setCommonDate(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                        fullWidth
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: 1,
-                            fontWeight: 600,
-                            fontSize: '0.7rem'
-                          },
-                          '& .MuiInputLabel-root': {
-                            fontSize: '0.65rem'
-                          }
-                        }}
-                      />
-                      <TextField
-                        size="small"
-                        label="Vehicle"
-                        value={commonVehicle}
-                        onChange={(e) => setCommonVehicle(e.target.value)}
-                        fullWidth
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: 1,
-                            fontWeight: 600,
-                            fontSize: '0.7rem'
-                          },
-                          '& .MuiInputLabel-root': {
-                            fontSize: '0.65rem'
-                          }
-                        }}
-                      />
-                    </Box>
-                  <Box sx={{ display: 'flex', gap: 0.8, flexWrap: 'wrap', ml: 'auto' }}>
-                      <Button
-                        size="small"
-                        startIcon={<SettingsIcon sx={{ fontSize: 12 }} />}
-                        onClick={() => setColumnSettingsOpen(true)}
-                        variant="outlined"
-                        sx={{
-                          borderRadius: 1,
-                          fontWeight: 700,
-                          fontSize: '0.65rem',
-                          py: 0.5,
-                          px: 1.2,
-                          borderWidth: 1.5,
-                          '&:hover': {
-                            borderWidth: 1.5
-                          }
-                        }}
-                      >
-                        Columns
-                      </Button>
-                      <Button 
-                        size="small"
-                        variant="contained" 
-                        onClick={add10Rows} 
-                        sx={{
-                          borderRadius: 1,
-                          fontWeight: 700,
-                          fontSize: '0.65rem',
-                          py: 0.5,
-                          px: 3.2,
-                          background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                          boxShadow: '0 2px 8px rgba(139, 92, 246, 0.25)',
-                          '&:hover': {
-                            boxShadow: '0 4px 12px rgba(139, 92, 246, 0.35)'
-                          }
-                        }}
-                      >
-                        +10 Rows
-                      </Button>
-                      <Button 
-                        size="small"
-                        variant="contained" 
-                        onClick={add30Rows} 
-                        sx={{
-                          borderRadius: 1,
-                          fontWeight: 700,
-                          fontSize: '0.65rem',
-                          py: 0.5,
-                          px: 1.2,
-                          background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
-                          boxShadow: '0 2px 8px rgba(236, 72, 153, 0.25)',
-                          '&:hover': {
-                            boxShadow: '0 4px 12px rgba(236, 72, 153, 0.35)'
-                          }
-                        }}
-                      >
-                        +30 Rows
-                      </Button>
-                  </Box>
-                </Stack>
-              </CardContent>
-            </Card>
 
-            {/* EXCEL STYLE TABLE - SCROLLABLE */}
-            <Box sx={{ 
-              flex: 1,
-              overflow: 'auto',
-              minHeight: 0,
-              border: '1px solid #d1d5db',
-              '&::-webkit-scrollbar': {
-                width: 12,
-                height: 12
-              },
-              '&::-webkit-scrollbar-track': {
-                background: '#f1f5f9'
-              },
-              '&::-webkit-scrollbar-thumb': {
-                background: '#94a3b8',
-                borderRadius: 0
-              }
+        {/* TAB 2: MULTI ENTRY ////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
+        {tabValue === 2 && (
+  <Box sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    height: 'calc(100vh - 230px)',
+    animation: 'fadeIn 0.5s ease-out',
+    '@keyframes fadeIn': {
+      '0%': { opacity: 0 },
+      '100%': { opacity: 1 }
+    }
+  }}>
+    {/* TOP CONTROLS - FIXED */}
+    <Card sx={{ 
+      mb: 1,
+      borderRadius: 1.5,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+      background: 'rgba(255, 255, 255, 0.98)',
+      border: '1px solid rgba(0,0,0,0.08)',
+      flexShrink: 0,
+      position: 'sticky',
+      top: 0,
+      zIndex: 100,
+      width: '100%',
+      boxSizing: 'border-box'
+    }}>
+      <CardContent sx={{ p: 1.2, width: '100%', boxSizing: 'border-box' }}>
+        <Stack direction="row" spacing={0.8} flexWrap="wrap" alignItems="center" sx={{ gap: 0.8, width: '100%' }}>
+          <Box sx={{ display: 'flex', gap: 1.8, flexWrap: 'wrap' }}>
+            <TextField
+              size="small"
+              label="Date"
+              type="date"
+              value={commonDate}
+              onChange={(e) => setCommonDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 1,
+                  fontWeight: 600,
+                  fontSize: '0.7rem'
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '0.65rem'
+                }
+              }}
+            />
+            <TextField
+              size="small"
+              label="Vehicle"
+              value={commonVehicle}
+              onChange={(e) => setCommonVehicle(e.target.value)}
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 1,
+                  fontWeight: 600,
+                  fontSize: '0.7rem'
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '0.65rem'
+                }
+              }}
+            />
+          </Box>
+          <Box sx={{ display: 'flex', gap: 0.8, flexWrap: 'wrap', ml: 'auto' }}>
+            <Button
+              size="small"
+              startIcon={<SettingsIcon sx={{ fontSize: 12 }} />}
+              onClick={() => setColumnSettingsOpen(true)}
+              variant="outlined"
+              sx={{
+                borderRadius: 1,
+                fontWeight: 700,
+                fontSize: '0.65rem',
+                py: 0.5,
+                px: 1.2,
+                borderWidth: 1.5,
+                '&:hover': {
+                  borderWidth: 1.5
+                }
+              }}
+            >
+              Columns
+            </Button>
+            <Button 
+              size="small"
+              variant="contained" 
+              onClick={add10Rows} 
+              sx={{
+                borderRadius: 1,
+                fontWeight: 700,
+                fontSize: '0.65rem',
+                py: 0.5,
+                px: 3.2,
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                boxShadow: '0 2px 8px rgba(139, 92, 246, 0.25)',
+                '&:hover': {
+                  boxShadow: '0 4px 12px rgba(139, 92, 246, 0.35)'
+                }
+              }}
+            >
+              +10 Rows
+            </Button>
+            <Button 
+              size="small"
+              variant="contained" 
+              onClick={add30Rows} 
+              sx={{
+                borderRadius: 1,
+                fontWeight: 700,
+                fontSize: '0.65rem',
+                py: 0.5,
+                px: 1.2,
+                background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+                boxShadow: '0 2px 8px rgba(236, 72, 153, 0.25)',
+                '&:hover': {
+                  boxShadow: '0 4px 12px rgba(236, 72, 153, 0.35)'
+                }
+              }}
+            >
+              +30 Rows
+            </Button>
+          </Box>
+        </Stack>
+      </CardContent>
+    </Card>
+
+
+    {/* EXCEL STYLE TABLE - SCROLLABLE */}
+    <Box sx={{ 
+      flex: 1,
+      overflow: 'auto',
+      minHeight: 0,
+      border: '1px solid #d1d5db',
+      '&::-webkit-scrollbar': {
+        width: 12,
+        height: 12
+      },
+      '&::-webkit-scrollbar-track': {
+        background: '#f1f5f9'
+      },
+      '&::-webkit-scrollbar-thumb': {
+        background: '#94a3b8',
+        borderRadius: 0
+      }
+    }}>
+      <TableContainer 
+        component={Paper} 
+        sx={{ 
+          borderRadius: 0,
+          boxShadow: 'none',
+          border: 'none',
+          background: '#ffffff',
+          height: '100%'
+        }}
+      >
+      <Table 
+        size="small"
+        stickyHeader
+        sx={{
+          '& .MuiTableCell-root': {
+            borderRight: '1px solid #d1d5db',
+            borderBottom: '1px solid #d1d5db',
+            padding: '4px 8px',
+            fontSize: '0.8rem'
+          }
+        }}
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ 
+              color: '#1f2937', 
+              fontWeight: 700, 
+              width: 50, 
+              textAlign: 'center',
+              background: '#e5e7eb',
+              fontSize: '0.8rem',
+              py: 0.8,
+              borderRight: '1px solid #9ca3af',
+              borderBottom: '1px solid #9ca3af'
             }}>
-              <TableContainer 
-                component={Paper} 
+              #
+            </TableCell>
+            {visibleColumns.map(col => (
+              <TableCell 
+                key={col} 
                 sx={{ 
-                  borderRadius: 0,
-                  boxShadow: 'none',
-                  border: 'none',
-                  background: '#ffffff',
-                  height: '100%'
+                  color: '#1f2937', 
+                  fontWeight: 700, 
+                  minWidth: 130,
+                  background: '#e5e7eb',
+                  fontSize: '0.8rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.3,
+                  py: 0.8,
+                  borderRight: '1px solid #9ca3af',
+                  borderBottom: '1px solid #9ca3af'
                 }}
               >
-              <Table 
-                size="small"
-                stickyHeader
-                sx={{
-                  '& .MuiTableCell-root': {
-                    borderRight: '1px solid #d1d5db',
-                    borderBottom: '1px solid #d1d5db',
-                    padding: '4px 8px',
-                    fontSize: '0.8rem'
+                {col.replace(/_/g, ' ')}
+              </TableCell>
+            ))}
+            <TableCell sx={{ 
+              color: '#1f2937', 
+              fontWeight: 700, 
+              width: 100, 
+              textAlign: 'center',
+              background: '#e5e7eb',
+              fontSize: '0.8rem',
+              py: 0.8,
+              borderRight: '1px solid #9ca3af',
+              borderBottom: '1px solid #9ca3af'
+            }}>
+              STATUS
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {multiRows.map((row, index) => {
+            const wsnTrimmed = row.wsn?.trim();
+            const isDuplicateOrInbound = duplicateWSNs.has(wsnTrimmed) || existingInboundWSNs.has(wsnTrimmed);
+            return (
+              <TableRow 
+                key={index} 
+                sx={{ 
+                  bgcolor: isDuplicateOrInbound ? '#fef3c7' : '#ffffff',
+                  '&:hover': { 
+                    bgcolor: isDuplicateOrInbound ? '#fde68a' : '#f3f4f6'
                   }
                 }}
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ 
-                      color: '#1f2937', 
-                      fontWeight: 700, 
-                      width: 50, 
-                      textAlign: 'center',
-                      background: '#e5e7eb',
-                      fontSize: '0.8rem',
-                      py: 0.8,
-                      borderRight: '1px solid #9ca3af',
-                      borderBottom: '1px solid #9ca3af'
-                    }}>
-                      #
-                    </TableCell>
-                    {visibleColumns.map(col => (
-                      <TableCell 
-                        key={col} 
+                <TableCell sx={{ 
+                  textAlign: 'center', 
+                  fontWeight: 600, 
+                  bgcolor: '#f9fafb',
+                  color: '#1f2937',
+                  fontSize: '0.8rem',
+                  borderRight: '1px solid #d1d5db'
+                }}>
+                  {index + 1}
+                </TableCell>
+                {visibleColumns.map((col, colIdx) => (
+                  <TableCell key={col} sx={{ p: 0.3, borderRight: '1px solid #d1d5db' }}>
+                    {col === 'rack_no' ? (
+                      <Select
+                        size="small"
+                        value={row[col] || ''}
+                        onChange={(e) => updateMultiRow(index, col, e.target.value)}
+                        fullWidth
                         sx={{ 
-                          color: '#1f2937', 
-                          fontWeight: 700, 
-                          minWidth: 130,
-                          background: '#e5e7eb',
-                          fontSize: '0.8rem',
-                          textTransform: 'uppercase',
-                          letterSpacing: 0.3,
-                          py: 0.8,
-                          borderRight: '1px solid #9ca3af',
-                          borderBottom: '1px solid #9ca3af'
+                          '& .MuiOutlinedInput-input': { py: 0.5, fontWeight: 500, fontSize: '0.8rem' },
+                          '& .MuiOutlinedInput-notchedOutline': { borderWidth: 1, borderColor: '#d1d5db' },
+                          '& .MuiOutlinedInput-root': { borderRadius: 0 }
                         }}
                       >
-                        {col.replace(/_/g, ' ')}
-                      </TableCell>
-                    ))}
-                    <TableCell sx={{ 
-                      color: '#1f2937', 
-                      fontWeight: 700, 
-                      width: 100, 
-                      textAlign: 'center',
-                      background: '#e5e7eb',
-                      fontSize: '0.8rem',
-                      py: 0.8,
-                      borderRight: '1px solid #9ca3af',
-                      borderBottom: '1px solid #9ca3af'
-                    }}>
-                      STATUS
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {multiRows.map((row, index) => (
-                    <TableRow 
-                      key={index} 
-                      sx={{ 
-                        bgcolor: multiResults[index]?.status === 'DUPLICATE' ? '#fef3c7' : '#ffffff',
-                        '&:hover': { 
-                          bgcolor: multiResults[index]?.status === 'DUPLICATE' ? '#fde68a' : '#f3f4f6'
-                        }
-                      }}
-                    >
-                      <TableCell sx={{ 
-                        textAlign: 'center', 
-                        fontWeight: 600, 
-                        bgcolor: '#f9fafb',
-                        color: '#1f2937',
-                        fontSize: '0.8rem',
-                        borderRight: '1px solid #d1d5db'
-                      }}>
-                        {index + 1}
-                      </TableCell>
-                      {visibleColumns.map((col, colIdx) => (
-                        <TableCell key={col} sx={{ p: 0.3, borderRight: '1px solid #d1d5db' }}>
-                          {col === 'rack_no' ? (
-                            <Select
-                              size="small"
-                              value={row[col] || ''}
-                              onChange={(e) => updateMultiRow(index, col, e.target.value)}
-                              fullWidth
-                              sx={{ 
-                                '& .MuiOutlinedInput-input': { py: 0.5, fontWeight: 500, fontSize: '0.8rem' },
-                                '& .MuiOutlinedInput-notchedOutline': { borderWidth: 1, borderColor: '#d1d5db' },
-                                '& .MuiOutlinedInput-root': { borderRadius: 0 }
-                              }}
-                            >
-                              <MenuItem value="">-</MenuItem>
-                              {racks.map(r => (
-                                <MenuItem key={r.id} value={r.rack_name}>{r.rack_name}</MenuItem>
-                              ))}
-                            </Select>
-                          ) : col.includes('date') ? (
-                            <TextField
-                              size="small"
-                              type="date"
-                              value={row[col] || ''}
-                              onChange={(e) => updateMultiRow(index, col, e.target.value)}
-                              InputLabelProps={{ shrink: true }}
-                              fullWidth
-                              sx={{ 
-                                '& .MuiOutlinedInput-input': { p: 0.5, fontWeight: 500, fontSize: '0.8rem' },
-                                '& .MuiOutlinedInput-notchedOutline': { borderWidth: 1, borderColor: '#d1d5db' },
-                                '& .MuiOutlinedInput-root': { borderRadius: 0, bgcolor: '#ffffff' }
-                              }}
-                            />
-                          ) : (
-                            <TextField
-                              size="small"
-                              value={row[col] || ''}
-                              onChange={(e) => updateMultiRow(index, col, e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, index, colIdx)}
-                              inputProps={{
-                                'data-row': index,
-                                'data-col': colIdx
-                              }}
-                              fullWidth
-                              multiline={col === 'unload_remarks'}
-                              maxRows={col === 'unload_remarks' ? 2 : 1}
-                              sx={{ 
-                                '& .MuiOutlinedInput-root': {
-                                  bgcolor: col === 'wsn' && duplicateWSNs.has(row.wsn?.trim()) ? '#fee2e2' : 
-                                           multiResults[index]?.status === 'DUPLICATE' ? '#fef3c7' : '#ffffff',
-                                  borderRadius: 0,
-                                  '&:hover': {
-                                    bgcolor: '#f9fafb'
-                                  },
-                                  '&.Mui-focused': {
-                                    bgcolor: '#ffffff',
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                      borderWidth: 2,
-                                      borderColor: '#3b82f6'
-                                    }
-                                  }
-                                },
-                                '& .MuiOutlinedInput-input': { p: 0.5, fontWeight: 500, fontSize: '0.8rem' },
-                                '& .MuiOutlinedInput-notchedOutline': { borderWidth: 1, borderColor: '#d1d5db' }
-                              }}
-                            />
-                          )}
-                        </TableCell>
-                      ))}
-                      <TableCell sx={{ textAlign: 'center', p: 0.5 }}>
-                        {multiResults[index] && (
-                          <Chip
-                            label={multiResults[index].status === 'SUCCESS' ? '✓' : '⚠'}
-                            color={multiResults[index].status === 'SUCCESS' ? 'success' : 'warning'}
-                            size="small"
-                            sx={{ 
-                              fontWeight: 800,
-                              fontSize: '1rem',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                            }}
-                          />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            </Box>
-
-            {/* SUBMIT BUTTON - FIXED */}
-            <Button
-              fullWidth
-              variant="contained"
-              size="medium"
-              onClick={handleMultiSubmit}
-              disabled={multiLoading}
-              startIcon={multiLoading ? <CircularProgress size={18} color="inherit" /> : <CheckIcon />}
-              sx={{ 
-                mt: 10,
-                mb: -20,
-                width: 400,
-                py: 0.9,
-                borderRadius: 1.5,
-                flexShrink: 0,
-                position: 'sticky',
-                bottom: 10,
-                zIndex: 100,
-                fontWeight: 200,
-                fontSize: '0.75rem',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                boxShadow: '0 15px 40px rgba(16, 185, 129, 0.4)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  boxShadow: '0 20px 50px rgba(16, 185, 129, 0.5)',
-                  transform: 'translateY(-4px)'
-                },
-                '&:disabled': {
-                  background: 'rgba(0,0,0,0.12)',
-                  boxShadow: 'none'
-                }
-              }}
-            >
-              {multiLoading ? '⏳ Submitting...' : `✓ Submit All (${multiRows.filter(r => r.wsn?.trim()).length} rows)`}
-            </Button>
-
-            {/* COLUMN SETTINGS DIALOG */}
-            <Dialog 
-              open={columnSettingsOpen} 
-              onClose={() => setColumnSettingsOpen(false)} 
-              maxWidth="sm" 
-              fullWidth
-              PaperProps={{
-                sx: {
-                  borderRadius: 3,
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-                }
-              }}
-            >
-              <DialogTitle sx={{ 
-                fontWeight: 800, 
-                fontSize: '1.5rem',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                py: 2.5
-              }}>
-                ⚙️ Column Settings
-              </DialogTitle>
-              <DialogContent sx={{ py: 3 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 800, color: '#667eea', textTransform: 'uppercase', letterSpacing: 1 }}>
-                  Default Columns
-                </Typography>
-                <Stack spacing={1.5} sx={{ mb: 3 }}>
-                  {DEFAULT_MULTI_COLUMNS.map(col => (
-                    <FormControlLabel key={col}
-                      control={
-                        <Checkbox
-                          checked={visibleColumns.includes(col)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              saveColumnSettings([...visibleColumns, col]);
-                            } else {
-                              saveColumnSettings(visibleColumns.filter(c => c !== col));
+                        <MenuItem value="">-</MenuItem>
+                        {racks.map(r => (
+                          <MenuItem key={r.id} value={r.rack_name}>{r.rack_name}</MenuItem>
+                        ))}
+                      </Select>
+                    ) : col.includes('date') ? (
+                      <TextField
+                        size="small"
+                        type="date"
+                        value={row[col] || ''}
+                        onChange={(e) => updateMultiRow(index, col, e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        sx={{ 
+                          '& .MuiOutlinedInput-input': { p: 0.5, fontWeight: 500, fontSize: '0.8rem' },
+                          '& .MuiOutlinedInput-notchedOutline': { borderWidth: 1, borderColor: '#d1d5db' },
+                          '& .MuiOutlinedInput-root': { borderRadius: 0, bgcolor: '#ffffff' }
+                        }}
+                      />
+                    ) : (
+                      <TextField
+                        size="small"
+                        value={row[col] || ''}
+                        onChange={(e) => updateMultiRow(index, col, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(e, index, colIdx)}
+                        inputProps={{
+                          'data-row': index,
+                          'data-col': colIdx
+                        }}
+                        fullWidth
+                        multiline={col === 'unload_remarks'}
+                        maxRows={col === 'unload_remarks' ? 2 : 1}
+                        sx={{ 
+                          '& .MuiOutlinedInput-root': {
+                            bgcolor: col === 'wsn' && isDuplicateOrInbound ? '#fee2e2' : '#ffffff',
+                            borderRadius: 0,
+                            '&:hover': {
+                              bgcolor: '#f9fafb'
+                            },
+                            '&.Mui-focused': {
+                              bgcolor: '#ffffff',
+                              '& .MuiOutlinedInput-notchedOutline': {
+                                borderWidth: 2,
+                                borderColor: '#3b82f6'
+                              }
                             }
-                          }}
-                          sx={{
-                            '&.Mui-checked': {
-                              color: '#667eea'
-                            }
-                          }}
-                        />
-                      }
-                      label={<Typography sx={{ fontWeight: 700 }}>{col.toUpperCase().replace(/_/g, ' ')}</Typography>}
-                      sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          bgcolor: 'rgba(102, 126, 234, 0.05)'
-                        }
-                      }}
+                          },
+                          '& .MuiOutlinedInput-input': { p: 0.5, fontWeight: 500, fontSize: '0.8rem' },
+                          '& .MuiOutlinedInput-notchedOutline': { borderWidth: 1, borderColor: '#d1d5db' }
+                        }}
+                      />
+                    )}
+                  </TableCell>
+                ))}
+                <TableCell sx={{ textAlign: 'center', p: 0.5 }}>
+                  {isDuplicateOrInbound ? (
+                    <Chip
+                      label="Duplicate WSN Error"
+                      color="warning"
+                      size="small"
+                      sx={{ fontWeight: 700 }}
                     />
-                  ))}
-                </Stack>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 800, color: '#764ba2', textTransform: 'uppercase', letterSpacing: 1 }}>
-                  Master Data Columns
-                </Typography>
-                <Stack spacing={1.5}>
-                  {ALL_MASTER_COLUMNS.map(col => (
-                    <FormControlLabel key={col}
-                      control={
-                        <Checkbox
-                          checked={visibleColumns.includes(col)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              saveColumnSettings([...visibleColumns, col]);
-                            } else {
-                              saveColumnSettings(visibleColumns.filter(c => c !== col));
-                            }
-                          }}
-                          sx={{
-                            '&.Mui-checked': {
-                              color: '#764ba2'
-                            }
-                          }}
-                        />
-                      }
-                      label={<Typography sx={{ fontWeight: 700 }}>{col.toUpperCase().replace(/_/g, ' ')}</Typography>}
-                      sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          bgcolor: 'rgba(118, 75, 162, 0.05)'
-                        }
-                      }}
+                  ) : multiResults[index]?.status === 'SUCCESS' ? (
+                    <Chip
+                      label="✓"
+                      color="success"
+                      size="small"
+                      sx={{ fontWeight: 800, fontSize: '1rem', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
                     />
-                  ))}
-                </Stack>
-              </DialogContent>
-              <DialogActions sx={{ p: 2.5 }}>
-                <Button 
-                  onClick={() => setColumnSettingsOpen(false)}
-                  variant="contained"
-                  sx={{
-                    borderRadius: 2,
-                    fontWeight: 700,
-                    px: 4,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                  ) : (
+                    <Chip
+                      label=""
+                      size="small"
+                      sx={{ fontWeight: 800, fontSize: '1rem' }}
+                    />
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+      </TableContainer>
+    </Box>
+
+    {/* SUBMIT BUTTON - FIXED */}
+    <Button
+      fullWidth
+      variant="contained"
+      size="medium"
+      onClick={handleMultiSubmit}
+      disabled={multiLoading}
+      startIcon={multiLoading ? <CircularProgress size={18} color="inherit" /> : <CheckIcon />}
+      sx={{ 
+        mt: 10,
+        mb: -20,
+        width: 400,
+        py: 0.9,
+        borderRadius: 1.5,
+        flexShrink: 0,
+        position: 'sticky',
+        bottom: 10,
+        zIndex: 100,
+        fontWeight: 200,
+        fontSize: '0.75rem',
+        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+        boxShadow: '0 15px 40px rgba(16, 185, 129, 0.4)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          boxShadow: '0 20px 50px rgba(16, 185, 129, 0.5)',
+          transform: 'translateY(-4px)'
+        },
+        '&:disabled': {
+          background: 'rgba(0,0,0,0.12)',
+          boxShadow: 'none'
+        }
+      }}
+    >
+      {multiLoading ? '⏳ Submitting...' : `✓ Submit All (${multiRows.filter(r => r.wsn?.trim()).length} rows)`}
+    </Button>
+
+    {/* COLUMN SETTINGS DIALOG */}
+    <Dialog 
+      open={columnSettingsOpen} 
+      onClose={() => setColumnSettingsOpen(false)} 
+      maxWidth="sm" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        fontWeight: 800, 
+        fontSize: '1.5rem',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        py: 2.5
+      }}>
+        ⚙️ Column Settings
+      </DialogTitle>
+      <DialogContent sx={{ py: 3 }}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 800, color: '#667eea', textTransform: 'uppercase', letterSpacing: 1 }}>
+          Default Columns
+        </Typography>
+        <Stack spacing={1.5} sx={{ mb: 3 }}>
+          {DEFAULT_MULTI_COLUMNS.map(col => (
+            <FormControlLabel key={col}
+              control={
+                <Checkbox
+                  checked={visibleColumns.includes(col)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      const originalOrder = [...DEFAULT_MULTI_COLUMNS, ...ALL_MASTER_COLUMNS];
+                      const newVisible = [...visibleColumns, col];
+                      const sortedVisible = originalOrder.filter(c => newVisible.includes(c));
+                      saveColumnSettings(sortedVisible);
+                    } else {
+                      saveColumnSettings(visibleColumns.filter(c => c !== col));
+                    }
                   }}
-                >
-                  Done
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </Box>
-        )}
+                  sx={{
+                    '&.Mui-checked': {
+                      color: '#667eea'
+                    }
+                  }}
+                />
+              }
+              label={<Typography sx={{ fontWeight: 700 }}>{col.toUpperCase().replace(/_/g, ' ')}</Typography>}
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: 'rgba(102, 126, 234, 0.05)'
+                }
+              }}
+            />
+          ))}
+        </Stack>
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 800, color: '#764ba2', textTransform: 'uppercase', letterSpacing: 1 }}>
+          Master Data Columns
+        </Typography>
+        <Stack spacing={1.5}>
+          {ALL_MASTER_COLUMNS.map(col => (
+            <FormControlLabel key={col}
+              control={
+                <Checkbox
+                  checked={visibleColumns.includes(col)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      const originalOrder = [...DEFAULT_MULTI_COLUMNS, ...ALL_MASTER_COLUMNS];
+                      const newVisible = [...visibleColumns, col];
+                      const sortedVisible = originalOrder.filter(c => newVisible.includes(c));
+                      saveColumnSettings(sortedVisible);
+                    } else {
+                      saveColumnSettings(visibleColumns.filter(c => c !== col));
+                    }
+                  }}
+                  sx={{
+                    '&.Mui-checked': {
+                      color: '#764ba2'
+                    }
+                  }}
+                />
+              }
+              label={<Typography sx={{ fontWeight: 700 }}>{col.toUpperCase().replace(/_/g, ' ')}</Typography>}
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: 'rgba(118, 75, 162, 0.05)'
+                }
+              }}
+            />
+          ))}
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ p: 2.5 }}>
+        <Button 
+          onClick={() => setColumnSettingsOpen(false)}
+          variant="contained"
+          sx={{
+            borderRadius: 2,
+            fontWeight: 700,
+            px: 4,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          }}
+        >
+          Done
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </Box>
+   )}
+  
 
         {/* TAB 3: INBOUND LIST */}
         {tabValue === 3 && (
@@ -2377,148 +2415,164 @@ export default function InboundPage() {
 
 
         {/* TAB 4: BATCH MANAGEMENT */}
-        {tabValue === 4 && (
-          <Box sx={{
-            animation: 'fadeIn 0.5s ease-out',
-            '@keyframes fadeIn': {
-              '0%': { opacity: 0 },
-              '100%': { opacity: 1 }
-            }
-          }}>
-            <TableContainer 
-              component={Paper} 
-              sx={{ 
-                borderRadius: 3,
-                boxShadow: '0 15px 50px rgba(0,0,0,0.12)',
-                background: 'rgba(255, 255, 255, 0.98)',
-                overflow: 'hidden'
-              }}
-            >
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 800,
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      fontSize: '0.9rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: 0.5,
-                      py: 2.5
-                    }}>
-                      🗂️ Batch ID
-                    </TableCell>
-                    <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 800,
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      fontSize: '0.9rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: 0.5,
-                      py: 2.5
-                    }}>
-                      📊 Count
-                    </TableCell>
-                    <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 800,
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      fontSize: '0.9rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: 0.5,
-                      py: 2.5
-                    }}>
-                      🕒 Last Updated
-                    </TableCell>
-                    <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 800,
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      fontSize: '0.9rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: 0.5,
-                      py: 2.5,
-                      textAlign: 'center'
-                    }}>
-                      ⚡ Action
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {batches.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} align="center" sx={{ py: 8 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#94a3b8' }}>
-                          📭 No batches found
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    batches.map((batch, idx) => (
-                      <TableRow 
-                        key={batch.batch_id}
-                        sx={{
-                          transition: 'all 0.2s ease',
-                          bgcolor: idx % 2 === 0 ? '#f9fafb' : '#fff',
-                          '&:hover': { 
-                            bgcolor: '#f3f4f6',
-                            transform: 'scale(1.001)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
-                          }
-                        }}
-                      >
-                        <TableCell sx={{ fontWeight: 700, fontFamily: 'monospace', fontSize: '1rem', color: '#667eea' }}>
-                          {batch.batch_id}
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>
-                          <Chip 
-                            label={`${batch.count} entries`}
-                            size="small"
-                            sx={{
-                              fontWeight: 700,
-                              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                              color: 'white',
-                              boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)'
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>
-                          {new Date(batch.last_updated).toLocaleString('en-IN', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </TableCell>
-                        <TableCell align="center">
-                          <Button
-                            size="small"
-                            variant="contained"
-                            startIcon={<DeleteIcon />}
-                            onClick={() => deleteBatch(batch.batch_id)}
-                            sx={{
-                              borderRadius: 2,
-                              fontWeight: 700,
-                              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                              boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
-                              '&:hover': {
-                                boxShadow: '0 6px 16px rgba(239, 68, 68, 0.4)',
-                                transform: 'translateY(-2px)'
-                              }
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        )}
+{tabValue === 4 && (
+  <Box
+    sx={{
+      animation: 'fadeIn 0.5s ease-out',
+      '@keyframes fadeIn': {
+        '0%': { opacity: 0 },
+        '100%': { opacity: 1 }
+      },
+      width: "100%",
+      overflowX: "hidden"
+    }}
+  >
+    {/* MOBILE-FRIENDLY SCROLL WRAPPER */}
+    <Box
+      sx={{
+        width: "100%",
+        overflowX: "auto",
+        overflowY: "hidden",
+        WebkitOverflowScrolling: "touch",
+        borderRadius: 2,
+        border: "1px solid #e5e7eb",
+      }}
+    >
+      <TableContainer
+        component={Paper}
+        sx={{
+          minWidth: 700,                  // ★ IMPORTANT: Enable horizontal scroll
+          borderRadius: 0,
+          boxShadow: "none",
+          overflowX: "auto",
+        }}
+      >
+        <Table size="small">
+
+          <TableHead>
+            <TableRow>
+              {[
+                "🗂️ Batch ID",
+                "📊 Count",
+                "🕒 Last Updated",
+                "⚡ Action"
+              ].map((label, idx) => (
+                <TableCell
+                  key={idx}
+                  sx={{
+                    color: 'white',
+                    fontWeight: 800,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    fontSize: '0.75rem',                 // ★ Mobile optimized
+                    textTransform: 'uppercase',
+                    letterSpacing: 0.5,
+                    py: 1.5,
+                    whiteSpace: "nowrap"                // ★ Prevent wrapping
+                  }}
+                  align={idx === 3 ? "center" : "left"}
+                >
+                  {label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {batches.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
+                  <Typography variant="body1" sx={{ fontWeight: 700, color: '#94a3b8' }}>
+                    📭 No batches found
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              batches.map((batch, idx) => (
+                <TableRow
+                  key={batch.batch_id}
+                  sx={{
+                    transition: 'all 0.2s ease',
+                    bgcolor: idx % 2 === 0 ? '#f9fafb' : '#fff',
+                    '&:hover': {
+                      bgcolor: '#f3f4f6',
+                      transform: 'scale(1.002)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+                    }
+                  }}
+                >
+                  {/* Batch ID */}
+                  <TableCell
+                    sx={{
+                      fontWeight: 700,
+                      fontFamily: 'monospace',
+                      fontSize: '0.8rem',
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    {batch.batch_id}
+                  </TableCell>
+
+                  {/* Count */}
+                  <TableCell sx={{ whiteSpace: "nowrap" }}>
+                    <Chip
+                      label={`${batch.count} entries`}
+                      size="small"
+                      sx={{
+                        fontWeight: 700,
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        color: 'white'
+                      }}
+                    />
+                  </TableCell>
+
+                  {/* Last Updated */}
+                  <TableCell
+                    sx={{
+                      whiteSpace: "nowrap",
+                      fontSize: "0.75rem"
+                    }}
+                  >
+                    {new Date(batch.last_updated).toLocaleString('en-IN', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </TableCell>
+
+                  {/* Action */}
+                  <TableCell align="center" sx={{ whiteSpace: "nowrap" }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={() => deleteBatch(batch.batch_id)}
+                      sx={{
+                        borderRadius: 2,
+                        fontWeight: 700,
+                        fontSize: "0.7rem",
+                        px: 1.5,
+                        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                        '&:hover': {
+                          transform: 'translateY(-2px)'
+                        }
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+
+        </Table>
+      </TableContainer>
+    </Box>
+  </Box>
+)}
+
       </Box>
     </AppLayout>
   );
