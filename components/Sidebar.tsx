@@ -306,18 +306,22 @@ export default function Sidebar() {
    </>
    ) : (
         <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              bgcolor: '#052457ff',
-              color: 'white',
-              transition: 'width 0.3s',
-              overflowX: 'hidden',
-            },
-          }}
-        >
+  variant="permanent"
+  sx={{
+    width: drawerWidth,
+    flexShrink: 0,           // ★ stop layout from widening
+    overflow: 'hidden',      // ★ prevent 1–2px horizontal bleed
+    '& .MuiDrawer-paper': {
+      width: drawerWidth,
+      bgcolor: '#052457ff',
+      color: 'white',
+      transition: 'width 0.3s',
+      overflowX: 'hidden',
+      boxSizing: 'border-box',
+    },
+  }}
+>
+
           {drawerContent}
         </Drawer>
       )}
