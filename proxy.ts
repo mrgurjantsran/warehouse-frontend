@@ -23,13 +23,14 @@ export function proxy(request: NextRequest, _: NextFetchEvent) {
 export const config = {
   matcher: [
     "/", 
-    "/dashboard/:path*",
-    "/inbound/:path*",
-    "/qc/:path*",
-    "/settings/:path*",
-    "/reports/:path*",
-    "/users/:path*",
-    "/warehouses/:path*",
+    // "/dashboard/:path*",
+    // "/inbound/:path*",
+    // "/qc/:path*",
+    // "/settings/:path*",
+    // "/reports/:path*",
+    // "/users/:path*",
+    // "/warehouses/:path*",
   ],
 };
+
 
