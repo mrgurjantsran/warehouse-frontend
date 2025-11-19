@@ -134,8 +134,7 @@ export const rackAPI = {
   getByWarehouse: (warehouseId: number) => api.get('racks/by-warehouse', 
     { params: { warehouse_id: warehouseId } })
 
-};
-  
+};  
 
 // QC API
 export const qcAPI = {
@@ -159,6 +158,53 @@ export const qcAPI = {
   
   getExistingWSNs: (warehouseId: number) => 
     api.get(`qc/existing-wsns`, { params: { warehouse_id: warehouseId } })
+};
+
+
+// Picking API
+export const pickingAPI = {
+  // Get source data by WSN (from QC or Inbound)
+  getSourceByWSN: (wsn: string, warehouseId: number) =>
+    api.get('/picking/source-by-wsn', {
+      params: { wsn, warehouseId }
+    }),
+
+  
+
+  // Multi picking entry
+  multiEntry: (entries: any[], warehouseId: number) =>
+    api.post('/picking/multi', { entries, warehouse_id: warehouseId }),  
+
+  // Get picking list
+  getAll: (page: number, limit: number, filters?: any) =>
+    api.get('/picking/list', {
+      params: {
+        page,
+        limit,
+        warehouseId: filters?.warehouseId,
+        search: filters?.search,
+        source: filters?.source,
+        customer: filters?.customer
+      }
+    }),
+
+  // Get customers
+  getCustomers: (warehouseId: number) =>
+    api.get('/picking/customers', {
+      params: { warehouseId }
+    }),
+
+  // Check WSN exists
+  checkWSNExists: (wsn: string, warehouseId: number) =>
+    api.get('/picking/check-wsn', {
+      params: { wsn, warehouseId }
+    }),
+
+  // Get all existing WSNs in picking
+  getAllPickingWSNs: (warehouseId: number) =>
+    api.get('/picking/existing-wsns', {
+      params: { warehouseId }
+    })
 };
 
 export default api;
