@@ -25,19 +25,40 @@ export const config = {
     "/",
     "/dashboard",
     "/dashboard/:path*",
+
+    // Inbound
     "/inbound",
     "/inbound/:path*",
+
+    // QC
     "/qc",
     "/qc/:path*",
+
+    // Picking
     "/picking",
     "/picking/:path*",
 
-    // FULL SETTINGS SUPPORT
+    // Settings (ALL pages)
     "/settings",
-    "/settings/*",
     "/settings/:path*",
+    "/settings/master-data",
+    "/settings/master-data/:path*",
+    "/settings/permissions",
+    "/settings/permissions/:path*",
+    "/settings/printers",
+    "/settings/printers/:path*",
+    "/settings/racks",
+    "/settings/racks/:path*",
+    "/settings/reports",
+    "/settings/reports/:path*",
+    "/settings/users",
+    "/settings/users/:path*",
+    "/settings/warehouses",
+    "/settings/warehouses/:path*",
   ],
 };
+
+
 
 
 
