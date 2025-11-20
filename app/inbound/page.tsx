@@ -96,7 +96,20 @@ export default function InboundPage() {
   const [exportStartDate, setExportStartDate] = useState('');
   const [exportEndDate, setExportEndDate] = useState('');
   const [exportBatchId, setExportBatchId] = useState('');
+  const [existingInboundWSNs, setExistingInboundWSNs] = useState(new Set());
 
+useEffect(() => {
+  async function fetchExistingWSNs() {
+    try {
+      const res = await inboundAPI.getAllInboundWSNs();
+      setExistingInboundWSNs(new Set(res.data)); // assuming res.data is string[] of WSNs
+    } catch (error) {
+      console.error('Failed to fetch existing inbound WSNs', error);
+    }
+  }
+  fetchExistingWSNs();
+ }, []);
+  
   // ====== AUTH CHECK ======
   useEffect(() => {
     const storedUser = getStoredUser();
@@ -576,19 +589,7 @@ export default function InboundPage() {
     );
   }
 
-  const [existingInboundWSNs, setExistingInboundWSNs] = useState(new Set());
 
-useEffect(() => {
-  async function fetchExistingWSNs() {
-    try {
-      const res = await inboundAPI.getAllInboundWSNs();
-      setExistingInboundWSNs(new Set(res.data)); // assuming res.data is string[] of WSNs
-    } catch (error) {
-      console.error('Failed to fetch existing inbound WSNs', error);
-    }
-  }
-  fetchExistingWSNs();
-}, []);
 
 
 
@@ -2577,3 +2578,4 @@ useEffect(() => {
     </AppLayout>
   );
 }
+
