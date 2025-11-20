@@ -174,8 +174,10 @@ export const pickingAPI = {
   
 
   // Multi picking entry
-  multiEntry: (entries: any[], warehouseId: number) =>
-    api.post('/picking/multi', { entries, warehouse_id: warehouseId }),  
+ multiEntry: (data: any, warehouseId: number) =>
+  api.post('/picking/multi', { ...data, warehouse_id: warehouseId }),
+
+
 
   // Get picking list
   getAll: (page: number, limit: number, filters?: any) =>
@@ -210,4 +212,5 @@ export const pickingAPI = {
 };
 
 export default api;
+
 
