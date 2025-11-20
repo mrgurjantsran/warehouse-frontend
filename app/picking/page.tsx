@@ -232,7 +232,8 @@ export default function PickingPage() {
 
 
       console.log('Submitting payload:', payload);
-      const res = await pickingAPI.multiEntry(payload, activeWarehouse?.id);
+      const res = await pickingAPI.multiEntry({ entries: payload }, activeWarehouse?.id);
+
       
       toast.success(`✓ Saved ${res.data.successCount} rows`);
       setMultiRows([]);
@@ -841,3 +842,4 @@ export default function PickingPage() {
   );
 
 }
+
