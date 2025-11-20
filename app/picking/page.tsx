@@ -212,18 +212,24 @@ export default function PickingPage() {
     setMultiLoading(true);
     try {
       const payload = filtered.map(row => ({
-        wsn: row.wsn?.trim(),
-        picking_date: commonDate,
-        picker_name: commonPicker,
-        picking_remarks: row.picking_remarks || '',
-        product_title: row.product_title || '',
-        brand: row.brand || '',
-        cms_vertical: row.cms_vertical || '',
-        fsp: row.fsp || '',
-        mrp: row.mrp || '',
-        rack_no: row.rack_no || '',
-        source: row.source || ''
-      }));
+  wsn: row.wsn?.trim(),
+  picking_date: commonDate,
+  picker_name: commonPicker,
+  picking_remarks: row.picking_remarks || '',
+  product_title: row.product_title || '',
+  brand: row.brand || '',
+  cms_vertical: row.cms_vertical || '',
+  fsp: row.fsp || '',
+  mrp: row.mrp || '',
+  rack_no: row.rack_no || '',
+  source: row.source || '',
+
+  // ⭐ REQUIRED FIELDS (FK FIX)
+  created_by: user?.id,                  // <--- This fixes the FK error
+  created_user_name: user?.fullName,     // optional but recommended
+  warehouse_id: activeWarehouse?.id
+}));
+
 
       console.log('Submitting payload:', payload);
       const res = await pickingAPI.multiEntry(payload, activeWarehouse?.id);
@@ -833,4 +839,5 @@ export default function PickingPage() {
       </Box>
     </AppLayout>
   );
+
 }
