@@ -320,7 +320,7 @@ export default function Sidebar() {
       boxSizing: 'border-box',
     },
   }}
->
+ >
 
           {drawerContent}
         </Drawer>
@@ -368,3 +368,4 @@ export default function Sidebar() {
     </div>
   );
 }
+
