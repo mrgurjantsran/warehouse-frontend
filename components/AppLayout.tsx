@@ -24,10 +24,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       {/* SIDEBAR */}
       <Box
-        sx={{
-          width: { xs: 0, sm: 230 },   // ★ Auto-hide sidebar on mobile
-          flexShrink: 0,
-          overflow: 'hidden',
+        sx={{          
+          flexShrink: 0,          
         }}
       >
         <Sidebar />
@@ -53,3 +51,4 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </Box>
   );
 }
+
