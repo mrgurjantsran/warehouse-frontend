@@ -1,5 +1,4 @@
-import Cookies from "js-cookie";
-import { authAPI } from "./api";
+import { authAPI } from './api';
 
 export interface User {
   id: number;
@@ -15,39 +14,37 @@ export interface AuthToken {
   user: User;
 }
 
-// LOGIN FUNCTION
-export const login = async (
-  username: string,
-  password: string
-): Promise<AuthToken> => {
+export const login = async (username: string, password: string): Promise<AuthToken> => {
   const response = await authAPI.login(username, password);
   const { token, user } = response.data;
-
-  // Save token + user in cookies
-  Cookies.set("token", token, { path: "/" });
-  Cookies.set("user", JSON.stringify(user), { path: "/" });
-
+  
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+  
   return { token, user };
 };
 
-// LOGOUT
 export const logout = () => {
-  Cookies.remove("token");
-  Cookies.remove("user");
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
 };
 
-// GET STORED USER
 export const getStoredUser = (): User | null => {
-  const user = Cookies.get("user");
+  if (typeof window === 'undefined') return null;
+  const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 };
 
-// GET STORED TOKEN
 export const getStoredToken = (): string | null => {
-  return Cookies.get("token") || null;
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('token');
 };
 
-// CHECK IF LOGGED IN
 export const isAuthenticated = (): boolean => {
-  return !!Cookies.get("token");
+  if (typeof window === 'undefined') return false;
+  return !!getStoredToken();
 };
