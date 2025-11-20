@@ -4,10 +4,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
+  withCredentials: true,  // 🔥 SEND COOKIES TO BACKEND
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
 
 // Auth API
 export const authAPI = {
@@ -208,3 +210,4 @@ export const pickingAPI = {
 };
 
 export default api;
+
