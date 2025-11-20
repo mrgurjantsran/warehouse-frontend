@@ -10,7 +10,7 @@ const router = useRouter();
  useEffect(() => {
   const check = async () => {
     // Fake delay for testing animation
-    await new Promise(res => setTimeout(res, 3000)); // 3 seconds
+    await new Promise(res => setTimeout(res, 2000)); // 2 seconds
 
     if (isAuthenticated()) {
       router.replace('/dashboard');
@@ -46,3 +46,4 @@ return (
   </div>
 );
 }
+
