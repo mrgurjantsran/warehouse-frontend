@@ -13,43 +13,33 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <Box
       sx={{
         display: 'flex',
-        width: '100%',          
-        maxWidth: '100%',
-        overflowX: 'hidden',        // ★ prevents whole page from shifting right
+        width: '100%',
+        height: '100vh',
+        overflow: 'hidden',
         position: 'relative',
       }}
       suppressHydrationWarning
     >
       <CssBaseline />
 
-      {/* SIDEBAR */}
-      
-        <Sidebar />
-      
+      {/* SIDEBAR (NO WRAPPER BOX) */}
+      <Sidebar />
 
-      {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           bgcolor: '#f5f5f5',
-          minHeight: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
-          height: 'auto',
-          width: '100%',
-          maxWidth: '100%',
-          overflowX: 'hidden',       // ★ stops entire screen from scrolling horizontally
-          overflowY: 'visible',
-          pb: 4, // bottom spacing for safety
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          height: '100%',
           WebkitOverflowScrolling: 'touch',
         }}
         suppressHydrationWarning
-        >
+      >
         {children}
       </Box>
     </Box>
   );
 }
-
-
-
-
