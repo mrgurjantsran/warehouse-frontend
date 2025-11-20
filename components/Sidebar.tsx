@@ -265,7 +265,7 @@ export default function Sidebar() {
   );
 
   return (
-    <div>
+    <>
       {isMobile ? (
      <>
      <Drawer
@@ -279,6 +279,8 @@ export default function Sidebar() {
       bgcolor: '#052457ff',
       color: 'white',
       // zIndex can be customized if needed, but usually not required.
+      left: 0,          // ★★ MUST
+     position: 'fixed' // ★★ MUST
      },
      }}
      >
@@ -320,7 +322,7 @@ export default function Sidebar() {
       boxSizing: 'border-box',
     },
   }}
- >
+>
 
           {drawerContent}
         </Drawer>
@@ -365,7 +367,6 @@ export default function Sidebar() {
           </List>
         </Paper>
       )}
-    </div>
+    </>
   );
 }
-
