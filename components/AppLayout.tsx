@@ -23,13 +23,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <CssBaseline />
 
       {/* SIDEBAR */}
-      <Box
-        sx={{          
-          flexShrink: 0,          
-        }}
-      >
+      
         <Sidebar />
-      </Box>
+      
 
       {/* MAIN CONTENT AREA */}
       <Box
@@ -53,6 +49,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </Box>
   );
 }
+
 
 
 
