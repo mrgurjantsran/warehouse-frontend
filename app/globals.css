@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 * {
   margin: 0;
   padding: 0;
@@ -14,7 +16,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f9fafb;
+  background-color: transparent;
 }
 
 a {
@@ -315,3 +317,78 @@ select {
   font-size: 13px;
   cursor: pointer;
 }
+
+
+
+/* App Open Time loading Animation ////////////////////////////////////////////////////////////////////////*/
+/* Conveyor belt wrapper */
+.conveyor-wrapper {
+  position: relative;
+  width: 260px;
+  height: 80px;
+  overflow: hidden;
+}
+
+/* Belt background */
+.belt {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 20px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #4b5563 0,
+    #4b5563 10px,
+    #6b7280 10px,
+    #6b7280 20px
+  );
+  animation: beltMove 1s linear infinite;
+  border-radius: 4px;
+}
+
+/* Boxes */
+.box {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #f59e0b; /* warehouse orange */
+  border-radius: 4px;
+  top: 10px;
+}
+
+/* 3 boxes with delay */
+.box-1 {
+  animation: moveBox 3s linear infinite;
+}
+
+.box-2 {
+  animation: moveBox 3s linear infinite;
+  animation-delay: 1s;
+}
+
+.box-3 {
+  animation: moveBox 3s linear infinite;
+  animation-delay: 2s;
+}
+
+/* Conveyor belt movement */
+@keyframes beltMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 0;
+  }
+}
+
+/* Boxes moving left to right */
+@keyframes moveBox {
+  0% {
+    left: -60px;
+  }
+  100% {
+    left: 260px;
+  }
+}
+
+
