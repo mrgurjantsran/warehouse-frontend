@@ -37,11 +37,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
         sx={{
           flexGrow: 1,
           bgcolor: '#f5f5f5',
-          minHeight: '100vh',
+          minHeight: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
+          height: 'auto',
           width: '100%',
           maxWidth: '100%',
           overflowX: 'hidden',       // ★ stops entire screen from scrolling horizontally
-          overflowY: 'auto',
+          overflowY: 'visible',
+          pb: 4, // bottom spacing for safety
           WebkitOverflowScrolling: 'touch',
         }}
         suppressHydrationWarning
@@ -51,4 +53,5 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </Box>
   );
 }
+
 
