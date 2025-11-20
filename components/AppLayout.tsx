@@ -47,11 +47,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
           WebkitOverflowScrolling: 'touch',
         }}
         suppressHydrationWarning
-      >
+        >
         {children}
       </Box>
     </Box>
   );
 }
+
 
 
