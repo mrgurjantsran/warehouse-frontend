@@ -5,23 +5,44 @@ import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '@/lib/auth';
 
 export default function Home() {
-  const router = useRouter();
+const router = useRouter();
 
-  useEffect(() => {
+ useEffect(() => {
+  const check = async () => {
+    // Fake delay for testing animation
+    await new Promise(res => setTimeout(res, 3000)); // 3 seconds
+
     if (isAuthenticated()) {
-      router.push('/dashboard');
+      router.replace('/dashboard');
     } else {
-      router.push('/login');
+      router.replace('/login');
     }
-  }, [router]);
+  };
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
-      <div className="text-center">
-        <div className="text-6xl font-bold text-blue-600 mb-4">WMS</div>
-        <p className="text-xl text-gray-600">Warehouse Management System</p>
-        <p className="text-sm text-gray-500 mt-2">Loading...</p>
+  check();
+  }, []);
+
+return (
+  <div
+    className="flex items-center justify-center min-h-screen"
+    style={{
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    }}
+  >
+    <div className="text-center text-white">
+      <div className="conveyor-wrapper mx-auto mb-6">
+        <div className="belt"></div>
+
+        <div className="box box-1"></div>
+        <div className="box box-2"></div>
+        <div className="box box-3"></div>
       </div>
+
+      <p className="text-white text-xl font-semibold mt-4 tracking-wide">
+        Preparing Warehouse...
+      </p>
+      <p className="text-purple-200 text-sm">Loading...</p>
     </div>
-  );
+  </div>
+);
 }
