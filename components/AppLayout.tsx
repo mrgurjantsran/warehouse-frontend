@@ -13,25 +13,26 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <Box
       sx={{
         display: 'flex',
-        width: '100%',
-        height: '100vh',
-        minHeight: '100vh',
-        maxWidth: '100vw',
-        overflow: 'hidden',
+        minHeight: '100dvh',
+        height: '100dvh',
+        width: '100vw',
         position: 'relative',
+        overflow: 'hidden',
       }}
     >
       <CssBaseline />
-      {/* Side bar */}
+
+      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
+          minHeight: '100dvh',
+          height: '100dvh',
           width: '100%',
-          minHeight: '100vh',
           bgcolor: '#f5f5f5',
           overflowY: 'auto',
           overflowX: 'hidden',
