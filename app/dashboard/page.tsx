@@ -1,7 +1,9 @@
 'use client';
 
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
 import {
   Box,
   Container,
@@ -36,31 +38,24 @@ interface User {
   email: string;
   role: string;
   warehouseId?: number;
-}
+}  
 
-export default function DashboardPage() {
+export default function DashboardPage() {  
   const router = useRouter();
+  useAuthGuard(); // ✔ token check handled here
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { activeWarehouse, setActiveWarehouse } = useWarehouse();
+  const { activeWarehouse } = useWarehouse();
   const warehouseId = activeWarehouse?.id;
 
+  // ✔ Load user ONCE
   useEffect(() => {
     const storedUser = getStoredUser();
-    if (!storedUser) {
-      router.push('/login');
-      return;
-    }
     setUser(storedUser);
     setLoading(false);
-  }, [router]);
-
-  const handleLogout = () => {
-    logout();
-    toast.success('Logged out successfully');
-    setTimeout(() => router.push('/login'), 500);
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -69,6 +64,12 @@ export default function DashboardPage() {
       </Box>
     );
   }
+
+  const handleLogout = () => {
+    logout();
+    toast.success('Logged out successfully');
+    setTimeout(() => router.push('/login'), 500);
+  };
 
   const kpiCards = [
     { label: 'Inbound', value: 156, color: '#1976d2', icon: InventoryIcon },
@@ -118,14 +119,14 @@ export default function DashboardPage() {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        {/* Welcome Banner */}
-                {/* Welcome Banner */}
+      <Container maxWidth="xl" sx={{ mt: 2 }}>
+
+        {/* Welcome Banner */}        
         <Paper 
           elevation={0} 
           sx={{ 
             p: 4, 
-            mb: 4, 
+            mb: 2, 
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
             color: 'white',
             borderRadius: 2,
@@ -153,7 +154,7 @@ export default function DashboardPage() {
         <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
           📊 Key Performance Indicators
         </Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 4 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
           {kpiCards.map((kpi, idx) => {
             const IconComponent = kpi.icon;
             return (
