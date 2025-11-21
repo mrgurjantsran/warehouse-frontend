@@ -295,20 +295,27 @@ export default function Sidebar() {
           )}
         </>
       ) : (
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              bgcolor: '#052457ff',
-              color: 'white',
-              transition: 'width 0.3s',
-              overflowX: 'hidden',
-            },
-          }}
-        >
+       <Drawer
+  variant="permanent"
+  sx={{
+    width: drawerWidth,
+    flexShrink: 0,
+    '& .MuiDrawer-paper': {
+      width: drawerWidth,
+      bgcolor: '#052457ff',
+      color: 'white',
+      transition: 'width 0.3s',
+      overflowX: 'hidden',
+      position: 'fixed',       // ⭐ FIX #1
+      top: 0,                  // ⭐ FIX #2
+      left: 0,                 // ⭐ FIX #3
+      height: '100vh',         // ⭐ FIX #4
+      display: 'flex',
+      flexDirection: 'column',
+    },
+  }}
+>
+
           {drawerContent}
         </Drawer>
       )}
