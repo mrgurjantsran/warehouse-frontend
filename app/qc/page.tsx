@@ -543,10 +543,10 @@ export default function QCPage() {
             }}
           >
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
-              ⚠️ No active warehouse selected. Please go to Settings → Warehouses to set one.
+              ⚠️ No active warehouse selected. 
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.9 }}>
-              Please select a warehouse to continue
+              Please go to Settings → Warehouses to set one.
             </Typography>
           </Box>
         </Box>
@@ -1085,3 +1085,4 @@ export default function QCPage() {
     </AppLayout>
   );
 }
+
