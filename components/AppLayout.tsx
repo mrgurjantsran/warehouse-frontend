@@ -13,9 +13,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <Box
       sx={{
         display: 'flex',
-        width: '100%',          
-        maxWidth: '100%',
-        overflowX: 'hidden',        // ★ prevents whole page from shifting right
+        width: '100%',
+        minHeight: '100%',   // ✅ FIXED
+        height: 'auto',      // ✅ FIXED
+        overflow: 'hidden',
         position: 'relative',
       }}
       suppressHydrationWarning
@@ -23,21 +24,23 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <CssBaseline />
 
       {/* SIDEBAR */}
-      
-        <Sidebar />
-      
+      <Sidebar />
 
-      {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           bgcolor: '#f5f5f5',
-          minHeight: '100%',          
           width: '100%',
           maxWidth: '100%',
-          overflowX: 'hidden',       // ★ stops entire screen from scrolling horizontally
+
+          /* MOST IMPORTANT FIX */
+          minHeight: '100%',   // ✅ FIXED
+          height: 'auto',      // ✅ FIXED
+
           overflowY: 'auto',
+          overflowX: 'hidden',
           WebkitOverflowScrolling: 'touch',
         }}
         suppressHydrationWarning
