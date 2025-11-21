@@ -81,7 +81,8 @@ export default function DashboardPage() {
 
   return (
     <AppLayout>
-      <Toaster position="top-center" />
+      <Box sx={{ height: "100%", overflowY: "auto", pb: 5 }}>
+      <Toaster position="top-right" />
 
       {/* Header */}
       <AppBar position="static" elevation={0} sx={{ bgcolor: 'white', color: 'text.primary' }}>
@@ -89,7 +90,7 @@ export default function DashboardPage() {
           <Typography variant="h5" fontWeight="bold" sx={{ flexGrow: 1 }}>
             📊 Dashboard
           </Typography>
-          
+
           {user && (
             <>
               <Stack direction="row" spacing={2} alignItems="center" sx={{ mr: 2 }}>
@@ -217,6 +218,7 @@ export default function DashboardPage() {
           </Stack>
         </Paper>
       </Container>
-    </AppLayout>
+      </Box>
+    </AppLayout>    
   );
 }
