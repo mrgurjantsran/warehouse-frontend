@@ -10,40 +10,30 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        width: '100%',
-        minHeight: '100%',   // ✅ FIXED
-        height: 'auto',      // ✅ FIXED
-        overflow: 'hidden',
-        position: 'relative',
-      }}
-      suppressHydrationWarning
-    >
+    <Box sx={{ 
+      display: 'flex', 
+      minHeight: '100vh',
+      height: '100%',
+      overflow: 'hidden'
+    }}>
       <CssBaseline />
-
+      
       {/* SIDEBAR */}
       <Sidebar />
-
-      {/* MAIN CONTENT */}
+      
+      {/* MAIN CONTENT AREA */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
+          minHeight: '100vh',
+          height: '100%',
+          overflow: 'auto',
           bgcolor: '#f5f5f5',
-          width: '100%',
-          maxWidth: '100%',
-
-          /* MOST IMPORTANT FIX */
-          minHeight: '100%',   // ✅ FIXED
-          height: 'auto',      // ✅ FIXED
-
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch',
+          '@media (max-width: 768px)': {
+            minHeight: '-webkit-fill-available',
+          }
         }}
-        suppressHydrationWarning
       >
         {children}
       </Box>
