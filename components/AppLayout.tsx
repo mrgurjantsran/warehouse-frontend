@@ -10,29 +10,35 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      minHeight: '100vh',
-      height: '100%',
-      overflow: 'hidden'
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+        width: '100%',
+        height: '100vh',
+        minHeight: '100vh',
+        maxWidth: '100vw',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
       <CssBaseline />
-      
-      {/* SIDEBAR */}
+      {/* Side bar */}
       <Sidebar />
-      
-      {/* MAIN CONTENT AREA */}
+
+      {/* Main Content Area */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
+          width: '100%',
           minHeight: '100vh',
-          height: '100%',
-          overflow: 'auto',
           bgcolor: '#f5f5f5',
-          '@media (max-width: 768px)': {
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          '@supports (-webkit-touch-callout: none)': {
             minHeight: '-webkit-fill-available',
-          }
+            height: '-webkit-fill-available',
+          },
         }}
       >
         {children}
