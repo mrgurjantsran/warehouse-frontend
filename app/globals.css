@@ -177,3 +177,10 @@ input, textarea, select { font-family: inherit; }
     display: none !important;
   }
 }
+
+html { background: red !important; }
+body { background: yellow !important; }
+#__next { background: blue !important; }
+
+
+
