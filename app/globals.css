@@ -1,18 +1,25 @@
 @import "tailwindcss";
 
+/* Universal Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Fix for mobile browser desktop mode */
+html, body, #__next {
   height: 100%;
-  overflow: hidden;
   min-height: 100vh;
+  width: 100%;
   margin: 0;
   padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 body {
@@ -22,24 +29,25 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: transparent;
-  height: 100%;
-  overflow: auto;
   position: relative;
+  height: 100%;
   min-height: 100vh;
-  margin: 0;
-  padding: 0;
+  width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 #__next {
-  min-height: 100%;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
 }
 
-/* Fix for mobile desktop mode viewport */
 @supports (-webkit-touch-callout: none) {
   html, body {
     min-height: -webkit-fill-available;
+    height: -webkit-fill-available;
   }
 }
 
@@ -186,4 +194,5 @@ select {
     display: none !important;
   }
 }
+
 
