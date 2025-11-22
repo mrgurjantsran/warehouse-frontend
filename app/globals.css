@@ -178,9 +178,47 @@ input, textarea, select { font-family: inherit; }
   }
 }
 
-html { background: red !important; }
-body { background: yellow !important; }
-#__next { background: blue !important; }
+
+
+
+
+html, body, #__next {
+  min-height: 100dvh;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: red !important; /* debug only */
+}
+
+body {
+  min-height: 100dvh;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  background: yellow !important; /* debug only */
+}
+
+#__next {
+  min-height: 100dvh;
+  height: 100dvh;
+  width: 100vw;
+  position: relative;
+  background: blue !important; /* debug only */
+  display: flex;
+  flex-direction: column;
+}
+
+@supports (-webkit-touch-callout: none) {
+  html, body, #__next {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+  }
+}
+
+
 
 
 
