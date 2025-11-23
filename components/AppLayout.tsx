@@ -12,41 +12,31 @@ export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <Box
       sx={{
+        position: 'absolute',
+        inset: 0,
         display: 'flex',
-        width: '100%',          
-        maxWidth: '100%',
-        overflowX: 'hidden',        // ★ prevents whole page from shifting right
-        position: 'relative',
+        flexDirection: 'row',
+        overflow: 'hidden',
       }}
-      suppressHydrationWarning
     >
       <CssBaseline />
-
-      {/* SIDEBAR */}
-      <Box
-        sx={{
-          width: { xs: 0, sm: 230 },   // ★ Auto-hide sidebar on mobile
-          flexShrink: 0,
-          overflow: 'hidden',
-        }}
-      >
+      
+      {/* Sidebar */}
+      <Box sx={{ height: '100%', flexShrink: 0 }}>
         <Sidebar />
       </Box>
 
-      {/* MAIN CONTENT AREA */}
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
+          flex: 1,
+          height: '100%',
           bgcolor: '#f5f5f5',
-          minHeight: '100vh',
-          width: '100%',
-          maxWidth: '100%',
-          overflowX: 'hidden',       // ★ stops entire screen from scrolling horizontally
           overflowY: 'auto',
+          overflowX: 'hidden',
           WebkitOverflowScrolling: 'touch',
         }}
-        suppressHydrationWarning
       >
         {children}
       </Box>
