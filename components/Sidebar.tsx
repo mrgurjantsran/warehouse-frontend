@@ -306,15 +306,14 @@ export default function Sidebar() {
       color: 'white',
       transition: 'width 0.3s',
       overflowX: 'hidden',
-      position: 'fixed',       // ⭐ FIX #1
-      top: 0,                  // ⭐ FIX #2
-      left: 0,                 // ⭐ FIX #3
-      height: '100vh',         // ⭐ FIX #4
+      position: 'relative',  // ✅ Changed from 'fixed'
+      height: '100%',        // ✅ Changed from '100vh'
       display: 'flex',
       flexDirection: 'column',
     },
   }}
 >
+
 
           {drawerContent}
         </Drawer>
@@ -365,3 +364,4 @@ export default function Sidebar() {
     </>
   );
 }
+
