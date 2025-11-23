@@ -11,21 +11,18 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <Box
+      id="app-root"
       sx={{
-        display: 'flex',
         minHeight: '100dvh',
         height: '100dvh',
         width: '100vw',
-        position: 'relative',
+        display: 'flex',
+        flexDirection: 'row',
         overflow: 'hidden',
+        background: 'purple', // debug color
       }}
     >
-      <CssBaseline />
-
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content */}
+      <Sidebar sx={{ height: '100dvh' }} />
       <Box
         component="main"
         sx={{
@@ -36,10 +33,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
           bgcolor: '#f5f5f5',
           overflowY: 'auto',
           overflowX: 'hidden',
-          '@supports (-webkit-touch-callout: none)': {
-            minHeight: '-webkit-fill-available',
-            height: '-webkit-fill-available',
-          },
         }}
       >
         {children}
@@ -47,3 +40,5 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </Box>
   );
 }
+
+
