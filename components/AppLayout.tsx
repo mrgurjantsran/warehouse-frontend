@@ -12,13 +12,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <Box
       sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100vw',
-        height: '100vh',
+        position: 'absolute',
+        inset: 0,
         display: 'flex',
         flexDirection: 'row',
         overflow: 'hidden',
@@ -26,13 +21,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
     >
       <CssBaseline />
       
-      {/* Sidebar container */}
-      <Box 
-        sx={{ 
-          height: '100%',
-          flexShrink: 0,
-        }}
-      >
+      {/* Sidebar */}
+      <Box sx={{ height: '100%', flexShrink: 0 }}>
         <Sidebar />
       </Box>
 
@@ -40,14 +30,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
+          flex: 1,
           height: '100%',
-          width: '100%',
           bgcolor: '#f5f5f5',
           overflowY: 'auto',
           overflowX: 'hidden',
           WebkitOverflowScrolling: 'touch',
-          position: 'relative',
         }}
       >
         {children}
