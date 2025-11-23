@@ -12,15 +12,16 @@ export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <Box
       sx={{
-        height: '100dvh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         width: '100vw',
+        height: '100vh',
         display: 'flex',
         flexDirection: 'row',
         overflow: 'hidden',
-        position: 'relative',
-        '@supports (-webkit-touch-callout: none)': {
-          height: '-webkit-fill-available',
-        },
       }}
     >
       <CssBaseline />
@@ -28,10 +29,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
       {/* Sidebar container */}
       <Box 
         sx={{ 
-          height: '100dvh',
-          '@supports (-webkit-touch-callout: none)': {
-            height: '-webkit-fill-available',
-          },
+          height: '100%',
+          flexShrink: 0,
         }}
       >
         <Sidebar />
@@ -42,15 +41,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
         component="main"
         sx={{
           flexGrow: 1,
-          height: '100dvh',
+          height: '100%',
           width: '100%',
           bgcolor: '#f5f5f5',
           overflowY: 'auto',
           overflowX: 'hidden',
           WebkitOverflowScrolling: 'touch',
-          '@supports (-webkit-touch-callout: none)': {
-            height: '-webkit-fill-available',
-          },
+          position: 'relative',
         }}
       >
         {children}
