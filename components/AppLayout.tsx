@@ -11,7 +11,6 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <Box
-      id="app-root"
       sx={{
         minHeight: '100dvh',
         height: '100dvh',
@@ -19,10 +18,15 @@ export default function AppLayout({ children }: AppLayoutProps) {
         display: 'flex',
         flexDirection: 'row',
         overflow: 'hidden',
-        background: 'purple', // debug color
       }}
     >
-      <Sidebar sx={{ height: '100dvh' }} />
+      <CssBaseline />
+      {/* Sidebar container */}
+      <Box sx={{ height: '100dvh' }}>
+        <Sidebar />
+      </Box>
+
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
@@ -40,5 +44,3 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </Box>
   );
 }
-
-
