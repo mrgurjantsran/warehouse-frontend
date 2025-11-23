@@ -17,7 +17,7 @@ import {
   Paper,
   Tooltip,
 } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, color } from 'framer-motion';
 import { ExpandLess, ExpandMore, Close as CloseIcon } from '@mui/icons-material';
 
 import {
@@ -39,6 +39,7 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
 
+  // Load collapsed state from localStorage
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('sidebar-collapsed') === 'true';
@@ -47,31 +48,32 @@ export default function Sidebar() {
   });
 
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // --------------------------------------
-  // FIXED MOBILE DETECTION (REAL DEVICE)
-  // --------------------------------------
   const [isMobile, setIsMobile] = useState(false);
 
+  // Settings dropdown
+  const [settingsOpen, setSettingsOpen] = useState(() =>
+    pathname.startsWith('/settings'),
+  );
+
+  // Flyout for collapsed mode
+  const [flyoutVisible, setFlyoutVisible] = useState(false);
+  const [settingsHovered, setSettingsHovered] = useState(false);
+  const [flyoutHovered, setFlyoutHovered] = useState(false);
+
+  // Detect mobile reliably and update on resize
   const checkMobile = useCallback(() => {
-    if (typeof navigator !== 'undefined') {
-      const real = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      setIsMobile(real);
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.innerWidth < 768);
     }
   }, []);
 
   useEffect(() => {
     checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, [checkMobile]);
 
-  const [settingsOpen, setSettingsOpen] = useState(() =>
-    pathname.startsWith('/settings')
-  );
-
-  const [flyoutVisible, setFlyoutVisible] = useState(false);
-  const [settingsHovered, setSettingsHovered] = useState(false);
-  const [flyoutHovered, setFlyoutHovered] = useState(false);
-
+  // Hide flyout if sidebar is not collapsed
   useEffect(() => {
     if (collapsed) {
       setFlyoutVisible(settingsHovered || flyoutHovered);
@@ -80,12 +82,14 @@ export default function Sidebar() {
     }
   }, [collapsed, settingsHovered, flyoutHovered]);
 
+  // Save collapsed state to localStorage on change
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('sidebar-collapsed', collapsed.toString());
     }
   }, [collapsed]);
 
+  // Close mobile drawer on route change to keep UI consistent
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
@@ -120,19 +124,25 @@ export default function Sidebar() {
       <Toolbar sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <IconButton
           onClick={() => (isMobile ? setMobileOpen(false) : setCollapsed(!collapsed))}
-          sx={{ color: 'white', margin: -1 }}
+          sx={{ color: 'white', margin:-1 }}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <MenuIcon />
         </IconButton>
 
         {!collapsed && (
-          <Typography fontWeight="bold">Divine WMS</Typography>
+          <>
+            {/* <WarehouseIcon sx={{ color: '#3b82f6' }} /> */}
+            <Typography fontWeight="bold">Divine WMS</Typography>
+            
+          </>
         )}
 
         {isMobile && (
           <IconButton
             sx={{ marginLeft: 'auto', color: 'white' }}
             onClick={() => setMobileOpen(false)}
+            aria-label="Close drawer"
           >
             <CloseIcon />
           </IconButton>
@@ -167,7 +177,6 @@ export default function Sidebar() {
                   >
                     <Icon />
                   </ListItemIcon>
-
                   {!collapsed && <ListItemText primary={item.label} />}
                 </ListItemButton>
               </Tooltip>
@@ -241,7 +250,6 @@ export default function Sidebar() {
             </motion.div>
           )}
         </AnimatePresence>
-
       </List>
 
       <Box sx={{ flexGrow: 1 }} />
@@ -257,70 +265,68 @@ export default function Sidebar() {
   );
 
   return (
-    <>
+    <div>
       {isMobile ? (
-        <>
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={() => setMobileOpen(false)}
-            ModalProps={{ keepMounted: true }}
-            sx={{
-              '& .MuiDrawer-paper': {
-                width: 230,
-                bgcolor: '#052457ff',
-                color: 'white',
-                left: 0,
-                position: 'fixed',
-              },
-            }}
-          >
-            {drawerContent}
-          </Drawer>
+     <>
+     <Drawer
+     variant="temporary"
+     open={mobileOpen}
+     onClose={() => setMobileOpen(false)}
+     ModalProps={{ keepMounted: true }}
+     sx={{
+     '& .MuiDrawer-paper': {
+      width: 230,
+      bgcolor: '#052457ff',
+      color: 'white',
+      // zIndex can be customized if needed, but usually not required.
+     },
+     }}
+     >
+     {drawerContent}
+    </Drawer>
 
-          {!mobileOpen && (
-            <IconButton
-              onClick={() => setMobileOpen(true)}
-              sx={{
-                position: 'fixed',
-                top: 10,
-                left: 10,
-                zIndex: 3000,
-                bgcolor: '#052457',
-                color: 'white',
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-        </>
-      ) : (
-       <Drawer
+
+    {/* Floating menu icon: Only show when drawer is closed */}
+    {!mobileOpen && (
+      <IconButton
+        onClick={() => setMobileOpen(true)}
+        sx={{
+          position: 'fixed',
+          top: 10,
+          left: 10,
+          zIndex: 3000,
+          bgcolor: '#052457',
+          color: 'white',
+        }}
+        aria-label="Open menu"
+      >
+        <MenuIcon />
+      </IconButton>
+    )}
+   </>
+   ) : (
+        <Drawer
   variant="permanent"
   sx={{
     width: drawerWidth,
-    flexShrink: 0,
+    flexShrink: 0,           // ★ stop layout from widening
+    overflow: 'hidden',      // ★ prevent 1–2px horizontal bleed
     '& .MuiDrawer-paper': {
       width: drawerWidth,
       bgcolor: '#052457ff',
       color: 'white',
       transition: 'width 0.3s',
       overflowX: 'hidden',
-      position: 'relative',  // ✅ Changed from 'fixed'
-      height: '100%',        // ✅ Changed from '100vh'
-      display: 'flex',
-      flexDirection: 'column',
+      boxSizing: 'border-box',
     },
   }}
 >
-
 
           {drawerContent}
         </Drawer>
       )}
 
-      {/* Flyout disabled on mobile */}
-      {flyoutVisible && collapsed && !isMobile && (
+      {flyoutVisible && collapsed && (
         <Paper
           onMouseEnter={() => setFlyoutHovered(true)}
           onMouseLeave={() => setFlyoutHovered(false)}
@@ -337,9 +343,7 @@ export default function Sidebar() {
             zIndex: 2000,
           }}
         >
-          <Typography sx={{ px: 1, pb: 1, fontSize: 13, opacity: 0.7 }}>
-            Settings
-          </Typography>
+          <Typography sx={{ px: 1, pb: 1, fontSize: 13, opacity: 0.7 }}>Settings</Typography>
 
           <List>
             {settingsMenu.map((item) => {
@@ -361,7 +365,6 @@ export default function Sidebar() {
           </List>
         </Paper>
       )}
-    </>
+    </div>
   );
 }
-
