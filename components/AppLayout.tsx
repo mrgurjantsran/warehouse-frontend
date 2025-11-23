@@ -11,14 +11,18 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <Box
-      sx={{
-        position: 'absolute',
-        inset: 0,
-        display: 'flex',
-        flexDirection: 'row',
-        overflow: 'hidden',
-      }}
-    >
+  sx={{
+    position: 'fixed',    // ✅ Fixed instead of absolute
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    overflow: 'hidden',
+  }}
+>
+
       <CssBaseline />
       
       {/* Sidebar */}
@@ -43,3 +47,4 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </Box>
   );
 }
+
