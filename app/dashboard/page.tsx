@@ -110,14 +110,15 @@ export default function DashboardPage() {
         </Toolbar>
       </AppBar>
 
-      <Container 
-        maxWidth="xl" 
-        sx={{ 
-          py: 3,
-          minHeight: 'calc(100vh - 64px)',
-          height: '100%'
-        }}
-      >
+     <Container 
+  maxWidth="xl" 
+  sx={{ 
+    py: 3,
+    // Remove minHeight completely
+    height: 'auto'  // Content-based height
+  }}
+>
+
         <Paper
           elevation={0}
           sx={{
@@ -255,3 +256,4 @@ export default function DashboardPage() {
     </AppLayout>
   );
 }
+
